@@ -5,16 +5,17 @@ import { relations } from "drizzle-orm";
 
 export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
-  code: text("code").notNull(), // e.g., "CS 159"
-  name: text("name").notNull(), // e.g., "Intro to Programming"
-  color: text("color").notNull(), // e.g., "#ef4444"
+  code: text("code").notNull(),
+  name: text("name").notNull(),
+  color: text("color").notNull(),
 });
 
 export const assignments = pgTable("assignments", {
   id: serial("id").primaryKey(),
   courseId: integer("course_id").notNull(),
-  title: text("title").notNull(), // e.g., "Homework 2"
-  type: text("type").notNull(), // e.g., "homework", "quiz", "exam", "lab"
+  title: text("title").notNull(),
+  type: text("type").notNull(),
+  platform: text("platform").notNull().default("Brightspace"),
   dueDate: timestamp("due_date").notNull(),
   completed: boolean("completed").default(false).notNull(),
 });
@@ -38,9 +39,7 @@ export type InsertCourse = z.infer<typeof insertCourseSchema>;
 export type Assignment = typeof assignments.$inferSelect;
 export type InsertAssignment = z.infer<typeof insertAssignmentSchema>;
 
-// API Types
 export type AssignmentWithCourse = Assignment & { course: Course };
 
-// Request types
 export type CreateAssignmentRequest = InsertAssignment;
 export type UpdateAssignmentRequest = Partial<InsertAssignment>;

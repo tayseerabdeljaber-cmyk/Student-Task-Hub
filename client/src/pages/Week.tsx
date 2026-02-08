@@ -1,44 +1,118 @@
 import { useState } from "react";
-import { format, addDays, startOfWeek, isSameDay } from "date-fns";
+import { format, addDays, subDays, startOfWeek, endOfWeek, isSameDay, addWeeks, subWeeks } from "date-fns";
 import { useAssignments } from "@/hooks/use-assignments";
 import { TaskCard } from "@/components/TaskCard";
+import { TaskDetailModal } from "@/components/TaskDetailModal";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, CalendarDays, Plus } from "lucide-react";
+import type { AssignmentWithCourse } from "@shared/schema";
 
 export default function Week() {
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 0 }));
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedTask, setSelectedTask] = useState<AssignmentWithCourse | null>(null);
   const { data: assignments, isLoading } = useAssignments();
 
-  const weekStart = startOfWeek(new Date(), { weekStartsOn: 0 }); // Sunday start
-  const weekDays = Array.from({ length: 7 }).map((_, i) => addDays(weekStart, i));
+  const weekDays = Array.from({ length: 7 }).map((_, i) => addDays(currentWeekStart, i));
 
-  // Filter tasks for selected day
-  const dailyTasks = assignments?.filter(task => 
-    isSameDay(new Date(task.dueDate), selectedDate)
+  const dailyTasks = assignments?.filter(task =>
+    isSameDay(new Date(task.dueDate), selectedDate) && !task.completed
+  ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()) || [];
+
+  const completedDaily = assignments?.filter(task =>
+    isSameDay(new Date(task.dueDate), selectedDate) && task.completed
   ) || [];
+
+  const getTaskCountForDay = (date: Date) => {
+    return assignments?.filter(task =>
+      isSameDay(new Date(task.dueDate), date) && !task.completed
+    ).length || 0;
+  };
+
+  const groupByTimeOfDay = (tasks: typeof dailyTasks) => {
+    const morning = tasks.filter(t => new Date(t.dueDate).getHours() < 12);
+    const afternoon = tasks.filter(t => {
+      const h = new Date(t.dueDate).getHours();
+      return h >= 12 && h < 17;
+    });
+    const evening = tasks.filter(t => new Date(t.dueDate).getHours() >= 17);
+    return { morning, afternoon, evening };
+  };
+
+  const { morning, afternoon, evening } = groupByTimeOfDay(dailyTasks);
+  const isViewingToday = isSameDay(selectedDate, new Date());
+  const isCurrentWeek = isSameDay(currentWeekStart, startOfWeek(new Date(), { weekStartsOn: 0 }));
+
+  const handlePrevWeek = () => {
+    const newStart = subWeeks(currentWeekStart, 1);
+    setCurrentWeekStart(newStart);
+    setSelectedDate(newStart);
+  };
+
+  const handleNextWeek = () => {
+    const newStart = addWeeks(currentWeekStart, 1);
+    setCurrentWeekStart(newStart);
+    setSelectedDate(newStart);
+  };
+
+  const jumpToToday = () => {
+    setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 0 }));
+    setSelectedDate(new Date());
+  };
+
+  const handleAddTask = () => {
+    alert("Coming soon!");
+  };
+
+  const renderTimeGroup = (label: string, tasks: typeof dailyTasks) => {
+    if (tasks.length === 0) return null;
+    return (
+      <div className="mb-6">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{label}</h3>
+        <div className="space-y-3">
+          {tasks.map(task => (
+            <TaskCard key={task.id} assignment={task} compact onTap={setSelectedTask} />
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="pb-24 pt-6 min-h-screen bg-slate-50 flex flex-col">
       <header className="px-4 mb-6 sticky top-0 bg-slate-50/95 backdrop-blur z-10 py-2">
-        <h1 className="text-2xl font-display font-bold text-slate-900 mb-4">
-          {format(new Date(), "MMMM yyyy")}
-        </h1>
-        
+        {/* Month Navigation */}
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={handlePrevWeek} className="p-2 text-slate-400" data-testid="button-prev-week">
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-xl font-bold text-slate-900" data-testid="text-week-header">
+            {format(currentWeekStart, "MMM d")} - {format(addDays(currentWeekStart, 6), "MMM d, yyyy")}
+          </h1>
+          <button onClick={handleNextWeek} className="p-2 text-slate-400" data-testid="button-next-week">
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+
         {/* Date Strip */}
         <div className="flex justify-between items-center bg-white rounded-2xl p-2 shadow-sm border border-slate-100">
           {weekDays.map((date) => {
             const isSelected = isSameDay(date, selectedDate);
             const isToday = isSameDay(date, new Date());
-            
+            const taskCount = getTaskCountForDay(date);
+
             return (
               <button
                 key={date.toISOString()}
                 onClick={() => setSelectedDate(date)}
                 className={cn(
-                  "flex flex-col items-center justify-center w-10 h-14 rounded-xl transition-all duration-200 relative",
-                  isSelected ? "bg-primary text-white shadow-md shadow-indigo-200 scale-105" : "text-slate-500 hover:bg-slate-50"
+                  "flex flex-col items-center justify-center w-10 h-16 rounded-xl transition-all duration-200 relative",
+                  isSelected ? "bg-indigo-500 text-white shadow-md shadow-indigo-200" : "text-slate-500"
                 )}
+                data-testid={`button-day-${format(date, "d")}`}
               >
                 <span className="text-[10px] font-medium uppercase tracking-tighter opacity-80">
                   {format(date, "EEE")}
@@ -49,9 +123,18 @@ export default function Week() {
                 )}>
                   {format(date, "d")}
                 </span>
-                
+
+                {taskCount > 0 && (
+                  <span className={cn(
+                    "text-[9px] font-bold mt-0.5",
+                    isSelected ? "text-indigo-200" : "text-indigo-400"
+                  )}>
+                    {taskCount}
+                  </span>
+                )}
+
                 {isToday && !isSelected && (
-                  <div className="absolute bottom-1.5 w-1 h-1 rounded-full bg-primary" />
+                  <div className="absolute bottom-1 w-1 h-1 rounded-full bg-indigo-500" />
                 )}
               </button>
             );
@@ -60,36 +143,72 @@ export default function Week() {
       </header>
 
       <main className="flex-1 px-4 max-w-md mx-auto w-full">
-        <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">
-          {isSameDay(selectedDate, new Date()) ? "Today's Schedule" : format(selectedDate, "EEEE, MMM d")}
-        </h2>
-
-        <div className="space-y-4">
-          {isLoading ? (
-            Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)
-          ) : dailyTasks.length > 0 ? (
-            <AnimatePresence mode="popLayout">
-              {dailyTasks.map(task => (
-                <TaskCard key={task.id} assignment={task} />
-              ))}
-            </AnimatePresence>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center justify-center h-64 text-center"
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider" data-testid="text-selected-day">
+            {isViewingToday ? "Today's Schedule" : format(selectedDate, "EEEE, MMM d")}
+          </h2>
+          {!isCurrentWeek && (
+            <button
+              onClick={jumpToToday}
+              className="text-xs font-semibold text-indigo-500 flex items-center gap-1"
+              data-testid="button-jump-today"
             >
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                <span className="text-4xl">☕️</span>
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">No tasks due</h3>
-              <p className="text-slate-500 text-sm max-w-[200px]">
-                Enjoy your free time or get ahead on upcoming work.
-              </p>
-            </motion.div>
+              <CalendarDays className="w-3.5 h-3.5" />
+              Jump to Today
+            </button>
           )}
         </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedDate.toISOString()}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+          >
+            {isLoading ? (
+              Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-2xl mb-3" />)
+            ) : dailyTasks.length > 0 || completedDaily.length > 0 ? (
+              <>
+                {renderTimeGroup("Morning (before 12pm)", morning)}
+                {renderTimeGroup("Afternoon (12-5pm)", afternoon)}
+                {renderTimeGroup("Evening (after 5pm)", evening)}
+
+                {completedDaily.length > 0 && (
+                  <div className="mb-6 opacity-60">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Completed</h3>
+                    <div className="space-y-3">
+                      {completedDaily.map(task => (
+                        <TaskCard key={task.id} assignment={task} compact onTap={setSelectedTask} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-48 text-center">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                  <CalendarDays className="w-8 h-8 text-slate-300" />
+                </div>
+                <h3 className="text-base font-semibold text-slate-700">No tasks due</h3>
+                <p className="text-slate-400 text-sm mt-1">Enjoy your free time or get ahead.</p>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Add Task Button */}
+        <button
+          onClick={handleAddTask}
+          className="w-full flex items-center justify-center gap-2 text-sm text-indigo-500 font-semibold py-3 border border-dashed border-indigo-200 rounded-xl mt-4"
+          data-testid="button-add-task"
+        >
+          <Plus className="w-4 h-4" />
+          Add Task
+        </button>
       </main>
+
+      <TaskDetailModal assignment={selectedTask} onClose={() => setSelectedTask(null)} />
     </div>
   );
 }

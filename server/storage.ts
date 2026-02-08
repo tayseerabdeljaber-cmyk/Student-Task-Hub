@@ -14,6 +14,7 @@ export interface IStorage {
   getAssignments(): Promise<AssignmentWithCourse[]>;
   getAssignment(id: number): Promise<AssignmentWithCourse | undefined>;
   updateAssignment(id: number, updates: Partial<InsertAssignment>): Promise<Assignment>;
+  deleteAssignment(id: number): Promise<void>;
   createCourse(course: typeof courses.$inferInsert): Promise<Course>;
   createAssignment(assignment: InsertAssignment): Promise<Assignment>;
 }
@@ -64,6 +65,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(assignments.id, id))
       .returning();
     return updated;
+  }
+
+  async deleteAssignment(id: number): Promise<void> {
+    await db.delete(assignments).where(eq(assignments.id, id));
   }
 
   async createCourse(course: typeof courses.$inferInsert): Promise<Course> {

@@ -57,7 +57,15 @@ export const api = {
         200: z.custom<typeof assignments.$inferSelect>(),
         404: errorSchemas.notFound,
       },
-    }
+    },
+    remove: {
+      method: 'DELETE' as const,
+      path: '/api/assignments/:id' as const,
+      responses: {
+        204: z.void(),
+        404: errorSchemas.notFound,
+      },
+    },
   },
 };
 
