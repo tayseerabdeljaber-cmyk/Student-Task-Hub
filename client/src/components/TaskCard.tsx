@@ -27,7 +27,7 @@ const PLATFORM_COLORS: Record<string, string> = {
   "Vocareum": "bg-purple-100 text-purple-700",
   "PearsonMyLab": "bg-indigo-100 text-indigo-700",
   "WebAssign": "bg-rose-100 text-rose-700",
-  "In-Class": "bg-slate-100 text-slate-600",
+  "In-Class": "bg-muted text-muted-foreground",
 };
 
 export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) {
@@ -49,14 +49,14 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
     deleteMutation.mutate(assignment.id);
   };
 
-  const platformClass = PLATFORM_COLORS[assignment.platform] || "bg-slate-100 text-slate-600";
+  const platformClass = PLATFORM_COLORS[assignment.platform] || "bg-muted text-muted-foreground";
 
   return (
     <div
       onClick={() => onTap?.(assignment)}
       className={cn(
-        "group relative rounded-2xl bg-white border border-slate-100 shadow-sm transition-all duration-300",
-        assignment.completed && "opacity-60 bg-slate-50",
+        "group relative rounded-2xl bg-card border border-border shadow-sm transition-all duration-300",
+        assignment.completed && "opacity-60 bg-background",
         compact ? "p-4" : "p-5",
         onTap && "cursor-pointer"
       )}
@@ -75,7 +75,7 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
             "mt-0.5 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200",
             assignment.completed
               ? "bg-emerald-500 border-emerald-500 text-white"
-              : "border-slate-300 text-transparent"
+              : "border-border text-transparent"
           )}
           data-testid={`button-toggle-${assignment.id}`}
         >
@@ -103,14 +103,14 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
           </div>
 
           <h3 className={cn(
-            "font-semibold text-slate-900 truncate pr-2 transition-all",
+            "font-semibold text-foreground truncate pr-2 transition-all",
             compact ? "text-sm" : "text-base",
-            assignment.completed && "line-through text-slate-400"
+            assignment.completed && "line-through text-muted-foreground"
           )} data-testid={`text-title-${assignment.id}`}>
             {assignment.title}
           </h3>
 
-          <div className="mt-1.5 flex items-center gap-3 text-slate-500 text-xs font-medium">
+          <div className="mt-1.5 flex items-center gap-3 text-muted-foreground text-xs font-medium">
             <div className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
               <span>{format(new Date(assignment.dueDate), "h:mm a")}</span>
@@ -124,7 +124,7 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
 
         <button
           onClick={handleDelete}
-          className="invisible group-hover:visible p-1.5 text-slate-400 mt-1 flex-shrink-0 transition-colors"
+          className="invisible group-hover:visible p-1.5 text-muted-foreground mt-1 flex-shrink-0 transition-colors"
           data-testid={`button-delete-${assignment.id}`}
         >
           <Trash2 className="w-4 h-4" />

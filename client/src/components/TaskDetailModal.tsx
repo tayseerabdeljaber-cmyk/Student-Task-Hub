@@ -41,12 +41,12 @@ export function TaskDetailModal({ assignment, onClose }: TaskDetailModalProps) {
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
-            className="fixed inset-x-0 bottom-0 bg-white rounded-t-3xl p-6 z-50 max-w-md mx-auto shadow-2xl"
+            className="fixed inset-x-0 bottom-0 bg-card rounded-t-3xl p-6 z-50 max-w-md mx-auto shadow-2xl"
             data-testid="modal-task-detail"
           >
-            <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4" />
+            <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
             
-            <button onClick={onClose} className="absolute top-4 right-4 text-slate-400" data-testid="button-close-detail">
+            <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground" data-testid="button-close-detail">
               <X className="w-5 h-5" />
             </button>
 
@@ -66,21 +66,21 @@ export function TaskDetailModal({ assignment, onClose }: TaskDetailModalProps) {
                 )}
               </div>
 
-              <h2 className="text-xl font-bold text-slate-900 mb-1" data-testid="text-detail-title">{assignment.title}</h2>
-              <p className="text-sm text-slate-500">{assignment.course.name}</p>
+              <h2 className="text-xl font-bold text-foreground mb-1" data-testid="text-detail-title">{assignment.title}</h2>
+              <p className="text-sm text-muted-foreground">{assignment.course.name}</p>
             </div>
 
             <div className="space-y-3 mb-6">
-              <div className="flex items-center gap-3 text-sm text-slate-600">
-                <Clock className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Clock className="w-4 h-4 text-muted-foreground" />
                 <span>Due {format(new Date(assignment.dueDate), "EEEE, MMM d 'at' h:mm a")}</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-slate-600">
-                <Icon className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Icon className="w-4 h-4 text-muted-foreground" />
                 <span className="capitalize">{assignment.type}</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-slate-600">
-                <ExternalLink className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <ExternalLink className="w-4 h-4 text-muted-foreground" />
                 <span>{assignment.platform}</span>
               </div>
             </div>
@@ -93,7 +93,7 @@ export function TaskDetailModal({ assignment, onClose }: TaskDetailModalProps) {
                 }}
                 className={`flex-1 h-12 rounded-xl text-base font-semibold ${
                   assignment.completed 
-                    ? "bg-slate-200 text-slate-700"
+                    ? "bg-muted text-foreground"
                     : "bg-emerald-500 text-white"
                 }`}
                 data-testid="button-mark-complete"

@@ -5,6 +5,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { BottomNav } from "@/components/BottomNav";
 import { SyncIndicator } from "@/components/SyncIndicator";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { OfflineBanner } from "@/components/OfflineBanner";
 
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
@@ -34,6 +36,8 @@ function App() {
     if (!localStorage.getItem("studyStreak")) {
       localStorage.setItem("studyStreak", "5");
     }
+    const darkMode = localStorage.getItem("studyflow_dark_mode") === "true";
+    document.documentElement.classList.toggle("dark", darkMode);
   }, []);
 
   const handleLogin = (email: string) => {
@@ -67,8 +71,10 @@ function App() {
   const showBottomNav = isLoggedIn && !["/login", "/signup", "/onboarding"].includes(location);
 
   return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased pb-safe">
+      <OfflineBanner />
+      <div className="min-h-screen bg-background text-foreground font-sans antialiased pb-safe">
         {showBottomNav && <SyncIndicator />}
         <Switch>
           <Route path="/login">
@@ -107,6 +113,7 @@ function App() {
         <Toaster />
       </div>
     </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

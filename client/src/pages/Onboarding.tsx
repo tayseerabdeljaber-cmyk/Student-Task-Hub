@@ -86,7 +86,7 @@ export default function Onboarding() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <div className="flex justify-center gap-1.5 mb-8">
           {STEPS.map((s, i) => (
@@ -94,7 +94,7 @@ export default function Onboarding() {
               key={s.id}
               className={cn(
                 "h-1 rounded-full transition-all duration-300",
-                i <= step ? "bg-indigo-500 w-8" : "bg-slate-200 w-4"
+                i <= step ? "bg-indigo-500 w-8" : "bg-muted w-4"
               )}
               data-testid={`step-indicator-${i}`}
             />
@@ -117,10 +117,10 @@ export default function Onboarding() {
                 <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <Sparkles className="w-10 h-10 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900 mb-2" data-testid="text-welcome-title">
+                <h1 className="text-2xl font-bold text-foreground mb-2" data-testid="text-welcome-title">
                   Welcome to StudyFlow
                 </h1>
-                <p className="text-slate-500 text-sm mb-3">
+                <p className="text-muted-foreground text-sm mb-3">
                   Your calm, organized study companion
                 </p>
                 <div className="space-y-3 text-left mt-8">
@@ -129,11 +129,11 @@ export default function Onboarding() {
                     { icon: Brain, text: "AI-powered study schedule generation" },
                     { icon: Target, text: "Track progress and build streaks" },
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-slate-100">
+                    <div key={i} className="flex items-center gap-3 bg-card rounded-xl p-3 border border-border">
                       <div className="w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0">
                         <item.icon className="w-4.5 h-4.5 text-indigo-500" />
                       </div>
-                      <p className="text-sm text-slate-700">{item.text}</p>
+                      <p className="text-sm text-foreground">{item.text}</p>
                     </div>
                   ))}
                 </div>
@@ -145,10 +145,10 @@ export default function Onboarding() {
                 <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Link2 className="w-10 h-10 text-indigo-500" />
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900 mb-2" data-testid="text-onboarding-title">
+                <h1 className="text-2xl font-bold text-foreground mb-2" data-testid="text-onboarding-title">
                   Connect your platforms
                 </h1>
-                <p className="text-slate-500 text-sm mb-8">
+                <p className="text-muted-foreground text-sm mb-8">
                   Sync assignments automatically
                 </p>
 
@@ -176,9 +176,9 @@ export default function Onboarding() {
 
                 <div className="space-y-2 mt-4">
                   {["Gradescope", "Piazza", "WebAssign"].map(platform => (
-                    <Card key={platform} className="p-3 flex items-center justify-between bg-white border-slate-100">
-                      <span className="text-sm text-slate-600">{platform}</span>
-                      <span className="text-[10px] text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full font-medium">Coming Soon</span>
+                    <Card key={platform} className="p-3 flex items-center justify-between bg-card border-border">
+                      <span className="text-sm text-muted-foreground">{platform}</span>
+                      <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-medium">Coming Soon</span>
                     </Card>
                   ))}
                 </div>
@@ -187,10 +187,10 @@ export default function Onboarding() {
 
             {step === 2 && (
               <div className="text-left">
-                <h1 className="text-2xl font-bold text-slate-900 mb-2 text-center" data-testid="text-study-style-title">
+                <h1 className="text-2xl font-bold text-foreground mb-2 text-center" data-testid="text-study-style-title">
                   When do you study best?
                 </h1>
-                <p className="text-slate-500 text-sm mb-6 text-center">
+                <p className="text-muted-foreground text-sm mb-6 text-center">
                   We'll optimize your schedule around your peak hours
                 </p>
 
@@ -205,26 +205,26 @@ export default function Onboarding() {
                         className={cn(
                           "p-3.5 rounded-xl border-2 text-left transition-all",
                           isSelected
-                            ? "border-indigo-500 bg-indigo-50"
-                            : "border-slate-100 bg-white"
+                            ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
+                            : "border-border bg-card"
                         )}
                         data-testid={`button-study-${opt.value}`}
                       >
                         <Icon className={cn(
                           "w-5 h-5 mb-1.5",
-                          isSelected ? "text-indigo-500" : "text-slate-400"
+                          isSelected ? "text-indigo-500" : "text-muted-foreground"
                         )} />
                         <p className={cn(
                           "text-sm font-semibold",
-                          isSelected ? "text-indigo-700" : "text-slate-700"
+                          isSelected ? "text-indigo-700" : "text-foreground"
                         )}>{opt.label}</p>
-                        <p className="text-[10px] text-slate-400">{opt.desc}</p>
+                          <p className="text-[10px] text-muted-foreground">{opt.desc}</p>
                       </button>
                     );
                   })}
                 </div>
 
-                <h3 className="text-sm font-bold text-slate-800 mb-3 text-center">What are your goals?</h3>
+                <h3 className="text-sm font-bold text-foreground mb-3 text-center">What are your goals?</h3>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {GOAL_OPTIONS.map(goal => (
                     <button
@@ -234,7 +234,7 @@ export default function Onboarding() {
                         "px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
                         goals.includes(goal)
                           ? "bg-indigo-500 text-white border-indigo-500"
-                          : "bg-white text-slate-600 border-slate-200"
+                          : "bg-card text-muted-foreground border-border"
                       )}
                       data-testid={`button-goal-${goal.replace(/\s+/g, '-').toLowerCase()}`}
                     >
@@ -255,32 +255,32 @@ export default function Onboarding() {
                 >
                   <Check className="w-10 h-10 text-white" />
                 </motion.div>
-                <h1 className="text-2xl font-bold text-slate-900 mb-2" data-testid="text-ready-title">
+                <h1 className="text-2xl font-bold text-foreground mb-2" data-testid="text-ready-title">
                   You're all set!
                 </h1>
-                <p className="text-slate-500 text-sm mb-6">
+                <p className="text-muted-foreground text-sm mb-6">
                   StudyFlow is ready to help you stay on track
                 </p>
                 <div className="space-y-3 text-left">
-                  <div className="bg-white rounded-xl p-4 border border-slate-100">
-                    <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">Your setup</p>
+                  <div className="bg-card rounded-xl p-4 border border-border">
+                    <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-2">Your setup</p>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-600">Brightspace</span>
+                        <span className="text-sm text-muted-foreground">Brightspace</span>
                         <span className={cn(
                           "text-xs font-medium px-2 py-0.5 rounded-full",
-                          connected ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-400"
+                          connected ? "bg-emerald-50 text-emerald-600" : "bg-muted text-muted-foreground"
                         )}>
                           {connected ? "Connected" : "Skipped"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-600">Study preference</span>
+                        <span className="text-sm text-muted-foreground">Study preference</span>
                         <span className="text-xs font-medium text-indigo-600 capitalize">{studyTime}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-600">Goals</span>
-                        <span className="text-xs font-medium text-slate-500">{goals.length || 0} selected</span>
+                        <span className="text-sm text-muted-foreground">Goals</span>
+                        <span className="text-xs font-medium text-muted-foreground">{goals.length || 0} selected</span>
                       </div>
                     </div>
                   </div>
@@ -316,7 +316,7 @@ export default function Onboarding() {
         {step < STEPS.length - 1 && (
           <button
             onClick={finish}
-            className="w-full text-center text-sm text-slate-400 font-medium mt-4"
+            className="w-full text-center text-sm text-muted-foreground font-medium mt-4"
             data-testid="link-skip-onboarding"
           >
             Skip for now

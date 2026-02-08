@@ -32,7 +32,7 @@ export default function Signup({ onSignup }: SignupProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -42,8 +42,8 @@ export default function Signup({ onSignup }: SignupProps) {
           <div className="w-16 h-16 bg-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-200">
             <BookOpen className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-1" data-testid="text-signup-title">Create Account</h1>
-          <p className="text-slate-500 text-sm">Join StudyFlow and stay organized</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1" data-testid="text-signup-title">Create Account</h1>
+          <p className="text-muted-foreground text-sm">Join StudyFlow and stay organized</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -52,7 +52,7 @@ export default function Signup({ onSignup }: SignupProps) {
             placeholder="First Name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="h-12 rounded-xl bg-white border-slate-200 text-base"
+            className="h-12 rounded-xl bg-card border-border text-base"
             data-testid="input-first-name"
             required
           />
@@ -61,7 +61,7 @@ export default function Signup({ onSignup }: SignupProps) {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-12 rounded-xl bg-white border-slate-200 text-base"
+            className="h-12 rounded-xl bg-card border-border text-base"
             data-testid="input-signup-email"
             required
           />
@@ -70,12 +70,12 @@ export default function Signup({ onSignup }: SignupProps) {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="h-12 rounded-xl bg-white border-slate-200 text-base"
+            className="h-12 rounded-xl bg-card border-border text-base"
             data-testid="input-signup-password"
             required
           />
           <Select value={university} onValueChange={setUniversity}>
-            <SelectTrigger className="h-12 rounded-xl bg-white border-slate-200 text-base" data-testid="select-university">
+            <SelectTrigger className="h-12 rounded-xl bg-card border-border text-base" data-testid="select-university">
               <SelectValue placeholder="Select University" />
             </SelectTrigger>
             <SelectContent>
@@ -95,7 +95,7 @@ export default function Signup({ onSignup }: SignupProps) {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-slate-500 mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           Already have an account?{" "}
           <button
             onClick={() => setLocation("/login")}

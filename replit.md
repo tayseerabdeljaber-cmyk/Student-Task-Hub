@@ -4,6 +4,10 @@
 A mobile-first student task management app designed to feel stress-relieving and calming. Built with React + TypeScript frontend and Express + PostgreSQL backend.
 
 ## Recent Changes
+- Feb 8, 2026: Comprehensive dark mode support across all 18+ pages/components (semantic tokens: bg-background, bg-card, text-foreground, etc.)
+- Feb 8, 2026: Added ErrorBoundary component wrapping entire app with crash recovery UI
+- Feb 8, 2026: Added OfflineBanner component with framer-motion animation for offline detection
+- Feb 8, 2026: Added AssignmentWithCourse type to useAssignments hook for proper TypeScript typing
 - Feb 8, 2026: Added SyncIndicator component showing sync status in app header
 - Feb 8, 2026: Upgraded PremiumModal with trial system, feature list, pricing tiers
 - Feb 8, 2026: Enhanced NotificationsDropdown with grouped notifications (Today/Yesterday/This Week/Earlier), mark-all-read, dismiss

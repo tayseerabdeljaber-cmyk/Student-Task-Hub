@@ -109,10 +109,10 @@ function MonthView({ currentDate, onSelectDate, activities, scheduleBlocks }: { 
     <div data-testid="view-month">
       <div className="grid grid-cols-7 mb-1">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
-          <div key={d} className="text-center text-[10px] font-medium text-slate-400 py-1">{d}</div>
+          <div key={d} className="text-center text-[10px] font-medium text-muted-foreground py-1">{d}</div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-px bg-slate-100 rounded-lg overflow-hidden">
+      <div className="grid grid-cols-7 gap-px bg-muted rounded-lg overflow-hidden">
         {weeks.flat().map((day, i) => {
           const items = getBlocksForDate(day, activities, scheduleBlocks);
           const inMonth = isSameMonth(day, currentDate);
@@ -122,8 +122,8 @@ function MonthView({ currentDate, onSelectDate, activities, scheduleBlocks }: { 
           const uniqueColors = Array.from(new Set(items.map(it => it.color))).slice(0, 4);
 
           return (
-            <button key={i} onClick={() => onSelectDate(day)} className={cn("bg-white p-1 min-h-[60px] text-left transition-colors", !inMonth && "opacity-40", today && "ring-1 ring-inset ring-indigo-400")} data-testid={`cell-day-${format(day, "yyyy-MM-dd")}`}>
-              <div className={cn("text-xs font-medium mb-0.5", today ? "text-indigo-600 font-bold" : "text-slate-700")}>{format(day, "d")}</div>
+            <button key={i} onClick={() => onSelectDate(day)} className={cn("bg-card p-1 min-h-[60px] text-left transition-colors", !inMonth && "opacity-40", today && "ring-1 ring-inset ring-indigo-400")} data-testid={`cell-day-${format(day, "yyyy-MM-dd")}`}>
+              <div className={cn("text-xs font-medium mb-0.5", today ? "text-indigo-600 font-bold" : "text-foreground")}>{format(day, "d")}</div>
               {uniqueColors.length > 0 && (
                 <div className="flex gap-0.5 mb-0.5">
                   {uniqueColors.map((c, j) => (
@@ -132,7 +132,7 @@ function MonthView({ currentDate, onSelectDate, activities, scheduleBlocks }: { 
                 </div>
               )}
               {items.length > 0 && (
-                <div className="text-[9px] text-slate-400">{items.length}</div>
+                <div className="text-[9px] text-muted-foreground">{items.length}</div>
               )}
               {overbooked && <div className="text-[9px] text-amber-500 font-bold">!</div>}
             </button>
@@ -152,23 +152,23 @@ function WeekTimelineView({ currentDate, activities, scheduleBlocks }: { current
   return (
     <div className="overflow-x-auto" data-testid="view-week-timeline">
       <div className="min-w-[600px]">
-        <div className="grid grid-cols-8 gap-px bg-slate-100">
-          <div className="bg-white p-1" />
+        <div className="grid grid-cols-8 gap-px bg-muted">
+          <div className="bg-card p-1" />
           {days.map(d => (
-            <div key={d.toISOString()} className={cn("bg-white p-1 text-center", isToday(d) && "bg-indigo-50")}>
-              <div className="text-[10px] text-slate-400">{format(d, "EEE")}</div>
-              <div className={cn("text-xs font-medium", isToday(d) ? "text-indigo-600 font-bold" : "text-slate-700")}>{format(d, "d")}</div>
+            <div key={d.toISOString()} className={cn("bg-card p-1 text-center", isToday(d) && "bg-indigo-50 dark:bg-indigo-950/30")}>
+              <div className="text-[10px] text-muted-foreground">{format(d, "EEE")}</div>
+              <div className={cn("text-xs font-medium", isToday(d) ? "text-indigo-600 font-bold" : "text-foreground")}>{format(d, "d")}</div>
             </div>
           ))}
         </div>
         <div className="relative">
           {hours.map(h => (
             <div key={h} className="grid grid-cols-8 gap-px bg-muted" style={{ height: 48 }}>
-              <div className="bg-white flex items-start justify-end pr-1 pt-0.5">
-                <span className="text-[9px] text-slate-400">{h === 0 ? "12a" : h < 12 ? `${h}a` : h === 12 ? "12p" : `${h - 12}p`}</span>
+              <div className="bg-card flex items-start justify-end pr-1 pt-0.5">
+                <span className="text-[9px] text-muted-foreground">{h === 0 ? "12a" : h < 12 ? `${h}a` : h === 12 ? "12p" : `${h - 12}p`}</span>
               </div>
               {days.map(d => (
-                <div key={d.toISOString()} className={cn("bg-white border-t border-border relative", isToday(d) && "bg-indigo-50/30")} />
+                <div key={d.toISOString()} className={cn("bg-card border-t border-border relative", isToday(d) && "bg-indigo-50/30")} />
               ))}
             </div>
           ))}
@@ -217,13 +217,13 @@ function DayView({ currentDate, activities, scheduleBlocks }: { currentDate: Dat
   return (
     <div data-testid="view-day">
       <div className="text-center mb-4">
-        <h3 className="text-lg font-bold text-slate-900">{format(currentDate, "EEEE, MMMM d, yyyy")}</h3>
-        <p className="text-sm text-slate-500">{items.length} activities scheduled</p>
+        <h3 className="text-lg font-bold text-foreground">{format(currentDate, "EEEE, MMMM d, yyyy")}</h3>
+        <p className="text-sm text-muted-foreground">{items.length} activities scheduled</p>
       </div>
       {items.length === 0 ? (
         <Card className="p-6 text-center">
-          <p className="text-slate-400 text-sm">Nothing scheduled for this day</p>
-          <p className="text-slate-400 text-xs mt-1">Generate a schedule or add activities</p>
+          <p className="text-muted-foreground text-sm">Nothing scheduled for this day</p>
+          <p className="text-muted-foreground text-xs mt-1">Generate a schedule or add activities</p>
         </Card>
       ) : (
         <div className="space-y-1">
@@ -238,28 +238,28 @@ function DayView({ currentDate, activities, scheduleBlocks }: { currentDate: Dat
               <div key={item.id}>
                 {gap > 15 && (
                   <div className="flex items-center gap-2 py-1 px-2">
-                    <div className="h-px flex-1 bg-slate-200" />
-                    <span className="text-[10px] text-slate-400">{gap} min break</span>
-                    <div className="h-px flex-1 bg-slate-200" />
+                    <div className="h-px flex-1 bg-muted" />
+                    <span className="text-[10px] text-muted-foreground">{gap} min break</span>
+                    <div className="h-px flex-1 bg-muted" />
                   </div>
                 )}
                 <div className={cn("flex gap-3 rounded-xl p-3 transition-all", item.isCompleted && "opacity-50")} data-testid={`block-${item.id}`}>
                   <div className="flex flex-col items-center min-w-[50px]">
-                    <span className="text-xs font-medium text-slate-500">{formatTimeFull(item.startTime)}</span>
+                    <span className="text-xs font-medium text-muted-foreground">{formatTimeFull(item.startTime)}</span>
                     <div className="w-0.5 flex-1 my-1 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-[10px] text-slate-400">{formatTimeFull(item.endTime)}</span>
+                    <span className="text-[10px] text-muted-foreground">{formatTimeFull(item.endTime)}</span>
                   </div>
                   <Card className={cn("flex-1 p-3 relative border-l-4")} style={{ borderLeftColor: item.color }}>
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <h4 className={cn("font-semibold text-sm text-slate-900", item.isCompleted && "line-through")}>{item.title}</h4>
+                        <h4 className={cn("font-semibold text-sm text-foreground", item.isCompleted && "line-through")}>{item.title}</h4>
                         <div className="flex items-center gap-2 mt-1 flex-wrap">
                           {item.location && (
-                            <span className="flex items-center gap-1 text-[10px] text-slate-500">
+                            <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
                               <MapPin className="w-3 h-3" />{item.location}
                             </span>
                           )}
-                          <span className="flex items-center gap-1 text-[10px] text-slate-500">
+                          <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
                             <Clock className="w-3 h-3" />{durHrs >= 1 ? `${Math.floor(durHrs)}h ${Math.round((durHrs % 1) * 60)}m` : `${Math.round(durHrs * 60)}m`}
                           </span>
                           <Badge variant="secondary" className="text-[9px] capitalize">{item.type}</Badge>
@@ -301,7 +301,7 @@ function AgendaView({ currentDate, activities, scheduleBlocks }: { currentDate: 
         return (
           <div key={day.toISOString()}>
             <div className="flex items-center gap-2 mb-2">
-              <h4 className={cn("text-sm font-bold", isToday(day) ? "text-indigo-600" : "text-slate-700")}>
+              <h4 className={cn("text-sm font-bold", isToday(day) ? "text-indigo-600" : "text-foreground")}>
                 {isToday(day) ? "TODAY" : format(day, "EEEE").toUpperCase()} - {format(day, "MMM d")}
               </h4>
               {items.length > 0 && (
@@ -310,7 +310,7 @@ function AgendaView({ currentDate, activities, scheduleBlocks }: { currentDate: 
             </div>
             <div className="space-y-1.5">
               {items.map(item => (
-                <div key={item.id} className={cn("flex items-center gap-3 py-2 px-3 rounded-lg bg-white border border-border", item.isCompleted && "opacity-50")}>
+                <div key={item.id} className={cn("flex items-center gap-3 py-2 px-3 rounded-lg bg-card border border-border", item.isCompleted && "opacity-50")}>
                   {item.isBlock && item.blockId ? (
                     <button
                       onClick={() => toggleMutation.mutate({ id: item.blockId!, isCompleted: !item.isCompleted })}
@@ -321,9 +321,9 @@ function AgendaView({ currentDate, activities, scheduleBlocks }: { currentDate: 
                   ) : (
                     <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
                   )}
-                  <span className="text-xs text-slate-500 min-w-[55px]">{formatTimeShort(item.startTime)}</span>
-                  <span className={cn("text-sm font-medium text-slate-800 flex-1", item.isCompleted && "line-through")}>{item.title}</span>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-xs text-muted-foreground min-w-[55px]">{formatTimeShort(item.startTime)}</span>
+                  <span className={cn("text-sm font-medium text-foreground flex-1", item.isCompleted && "line-through")}>{item.title}</span>
+                  <span className="text-[10px] text-muted-foreground">
                     {(() => { const dur = (parseTime(item.endTime) - parseTime(item.startTime)) / 60; return dur >= 1 ? `${Math.round(dur * 10) / 10} hr` : `${Math.round(dur * 60)} min`; })()}
                   </span>
                 </div>
@@ -378,7 +378,7 @@ export default function Schedule() {
             <Button size="icon" variant="ghost" onClick={() => navigate(-1)} data-testid="button-prev">
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <h2 className="text-lg font-bold text-slate-900 min-w-[140px] text-center" data-testid="text-schedule-header">{headerText}</h2>
+            <h2 className="text-lg font-bold text-foreground min-w-[140px] text-center" data-testid="text-schedule-header">{headerText}</h2>
             <Button size="icon" variant="ghost" onClick={() => navigate(1)} data-testid="button-next">
               <ChevronRight className="w-4 h-4" />
             </Button>
@@ -391,9 +391,9 @@ export default function Schedule() {
             </Button>
           </div>
         </div>
-        <div className="flex gap-1 bg-slate-100 p-0.5 rounded-lg">
+        <div className="flex gap-1 bg-muted p-0.5 rounded-lg">
           {(["day", "week", "month", "agenda"] as ViewMode[]).map(v => (
-            <button key={v} onClick={() => setView(v)} className={cn("flex-1 py-1.5 rounded-md text-xs font-medium transition-colors capitalize", view === v ? "bg-white text-slate-900 shadow-sm" : "text-slate-500")} data-testid={`button-view-${v}`}>
+            <button key={v} onClick={() => setView(v)} className={cn("flex-1 py-1.5 rounded-md text-xs font-medium transition-colors capitalize", view === v ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")} data-testid={`button-view-${v}`}>
               {v}
             </button>
           ))}

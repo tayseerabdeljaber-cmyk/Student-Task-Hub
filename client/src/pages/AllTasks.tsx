@@ -81,19 +81,19 @@ export default function AllTasks() {
   const { overdue, thisWeek, later, completed } = categorizeTasks(assignments);
 
   return (
-    <div className="pb-24 pt-8 px-4 max-w-md mx-auto min-h-screen bg-slate-50">
+    <div className="pb-24 pt-8 px-4 max-w-md mx-auto min-h-screen bg-background">
       <header className="mb-4">
-        <h1 className="text-3xl font-bold text-slate-900 mb-4" data-testid="text-all-tasks-title">All Tasks</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-4" data-testid="text-all-tasks-title">All Tasks</h1>
 
         {/* Search Bar */}
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search assignments..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-10 rounded-xl bg-white border-slate-200 text-sm"
+            className="pl-9 h-10 rounded-xl bg-card border-border text-sm"
             data-testid="input-search"
           />
         </div>
@@ -101,7 +101,7 @@ export default function AllTasks() {
         {/* Filters row */}
         <div className="flex items-center gap-2">
           <Select value={filterCourse} onValueChange={setFilterCourse}>
-            <SelectTrigger className="flex-1 rounded-xl border-slate-200 bg-white shadow-sm h-9 text-xs font-medium" data-testid="select-filter-course">
+            <SelectTrigger className="flex-1 rounded-xl border-border bg-card shadow-sm h-9 text-xs font-medium" data-testid="select-filter-course">
               <SelectValue placeholder="All Classes" />
             </SelectTrigger>
             <SelectContent>
@@ -115,7 +115,7 @@ export default function AllTasks() {
           </Select>
 
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[130px] rounded-xl border-slate-200 bg-white shadow-sm h-9 text-xs font-medium" data-testid="select-sort">
+            <SelectTrigger className="w-[130px] rounded-xl border-border bg-card shadow-sm h-9 text-xs font-medium" data-testid="select-sort">
               <ArrowDownUp className="w-3 h-3 mr-1" />
               <SelectValue />
             </SelectTrigger>
@@ -156,7 +156,7 @@ export default function AllTasks() {
                 <TaskCard key={task.id} assignment={task} onTap={setSelectedTask} />
               ))
             ) : (
-              !isLoading && <p className="text-slate-400 text-sm italic">No tasks due this week.</p>
+              !isLoading && <p className="text-muted-foreground text-sm italic">No tasks due this week.</p>
             )}
           </div>
         </section>
@@ -166,10 +166,10 @@ export default function AllTasks() {
           <Collapsible open={laterOpen} onOpenChange={setLaterOpen}>
             <CollapsibleTrigger asChild>
               <button className="flex items-center justify-between w-full mb-3" data-testid="button-toggle-later">
-                <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+                <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">
                   Later
                 </h2>
-                <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
+                <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
                   {laterOpen ? "Collapse" : `Tap to expand (${later.length} more)`}
                   <ChevronDown className={cn(
                     "w-4 h-4 transition-transform duration-200",
@@ -189,8 +189,8 @@ export default function AllTasks() {
 
         {/* Completed Section */}
         {completed.length > 0 && (
-          <section className="pt-4 border-t border-slate-200">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3" data-testid="text-completed-heading">
+          <section className="pt-4 border-t border-border">
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3" data-testid="text-completed-heading">
               Completed ({completed.length})
             </h2>
             <div className="space-y-3 opacity-60">

@@ -102,6 +102,19 @@ export async function registerRoutes(
     res.json(courses);
   });
 
+  app.post(api.assignments.create.path, async (req, res) => {
+    try {
+      const input = api.assignments.create.input.parse(req.body);
+      const assignment = await storage.createAssignment(input);
+      res.status(201).json(assignment);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get(api.assignments.list.path, async (req, res) => {
     const assignments = await storage.getAssignments();
     res.json(assignments);

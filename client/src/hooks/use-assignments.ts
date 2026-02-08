@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
-import { type InsertAssignment } from "@shared/schema";
+import { type InsertAssignment, type AssignmentWithCourse } from "@shared/schema";
 
 const credentials = "include" as const;
 
 export function useAssignments() {
-  return useQuery({
+  return useQuery<AssignmentWithCourse[]>({
     queryKey: [api.assignments.list.path],
     queryFn: async () => {
       const res = await fetch(api.assignments.list.path, { credentials });
@@ -61,6 +61,25 @@ export function useUpdateAssignment() {
         credentials,
       });
       if (!res.ok) throw new Error("Failed to update assignment");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.assignments.list.path] });
+    },
+  });
+}
+
+export function useCreateAssignment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: InsertAssignment) => {
+      const res = await fetch(api.assignments.create.path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials,
+      });
+      if (!res.ok) throw new Error("Failed to create assignment");
       return res.json();
     },
     onSuccess: () => {

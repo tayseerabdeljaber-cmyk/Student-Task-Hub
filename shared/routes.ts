@@ -58,6 +58,14 @@ export const api = {
         404: errorSchemas.notFound,
       },
     },
+    create: {
+      method: 'POST' as const,
+      path: '/api/assignments' as const,
+      input: insertAssignmentSchema,
+      responses: {
+        201: z.custom<typeof assignments.$inferSelect>(),
+      },
+    },
     remove: {
       method: 'DELETE' as const,
       path: '/api/assignments/:id' as const,

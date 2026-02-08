@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { useLocation } from "wouter";
 import { useAssignments } from "@/hooks/use-assignments";
 import { useScheduleBlocks } from "@/hooks/use-activities";
@@ -37,20 +37,22 @@ export default function Today() {
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
   const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
-  const todaysTasks = assignments?.filter(task => {
+  const todaysTasks = assignments?.filter((task: AssignmentWithCourse) => {
     const due = new Date(task.dueDate);
     return due >= todayStart && due <= todayEnd && !task.completed;
-  }) || [];
+  }).sort((a: AssignmentWithCourse, b: AssignmentWithCourse) =>
+    new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+  ) || [];
 
-  const completedToday = assignments?.filter(task => {
+  const completedToday = assignments?.filter((task: AssignmentWithCourse) => {
     const due = new Date(task.dueDate);
     return due >= todayStart && due <= todayEnd && task.completed;
   }) || [];
 
-  const upcomingTasks = assignments?.filter(task => {
+  const upcomingTasks = assignments?.filter((task: AssignmentWithCourse) => {
     const due = new Date(task.dueDate);
     return due > todayEnd && !task.completed;
-  }).slice(0, 3) || [];
+  }).slice(0, 5) || [];
 
   const allTodayDone = todaysTasks.length === 0 && completedToday.length > 0;
 
@@ -62,38 +64,43 @@ export default function Today() {
   };
 
   const nextDueTask = todaysTasks.length > 0
-    ? todaysTasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0]
+    ? todaysTasks[0]
     : upcomingTasks[0];
 
+  const getRelativeDate = (dateStr: string | Date) => {
+    const date = new Date(dateStr);
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    if (date.toDateString() === now.toDateString()) return "Today";
+    if (date.toDateString() === tomorrow.toDateString()) return "Tomorrow";
+    return format(date, "EEEE");
+  };
+
   return (
-    <div className="pb-24 px-4 pt-8 max-w-md mx-auto min-h-screen bg-slate-50">
-      {/* Header */}
+    <div className="pb-24 px-4 pt-8 max-w-md mx-auto min-h-screen bg-background">
       <header className="mb-8">
-        <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-1" data-testid="text-date">
+        <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1" data-testid="text-date">
           {format(new Date(), "EEEE, MMMM d")}
         </p>
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-3xl font-bold text-slate-900" data-testid="text-greeting">
+          <h1 className="text-3xl font-bold text-foreground" data-testid="text-greeting">
             {getGreeting()}
           </h1>
           <div className="flex items-center gap-2">
-            {/* Streak */}
-            <div className="flex items-center gap-1 bg-orange-50 px-2.5 py-1.5 rounded-full border border-orange-100" data-testid="badge-streak">
+            <div className="flex items-center gap-1 bg-orange-50 dark:bg-orange-900/20 px-2.5 py-1.5 rounded-full border border-orange-100 dark:border-orange-800" data-testid="badge-streak">
               <Flame className="w-4 h-4 text-orange-500" />
-              <span className="text-xs font-bold text-orange-600">{streak}</span>
+              <span className="text-xs font-bold text-orange-600 dark:text-orange-400">{streak}</span>
             </div>
-            {/* Notifications */}
             <NotificationsDropdown />
           </div>
         </div>
       </header>
 
-      {/* Focus Mode Toggle, Premium & Insights */}
       <div className="flex items-center gap-2 mb-6 flex-wrap">
         <Button
           variant="outline"
           onClick={() => setFocusMode(!focusMode)}
-          className={`rounded-full text-xs font-semibold gap-1.5 ${focusMode ? "bg-indigo-50 border-indigo-200 text-indigo-600" : ""}`}
+          className={`rounded-full text-xs font-semibold gap-1.5 ${focusMode ? "bg-primary/10 border-primary/30 text-primary" : ""}`}
           data-testid="button-focus-mode"
         >
           {focusMode ? <X className="w-3.5 h-3.5" /> : <Focus className="w-3.5 h-3.5" />}
@@ -121,7 +128,6 @@ export default function Today() {
 
       <AnimatePresence mode="wait">
         {focusMode ? (
-          /* Focus Mode - show only next task */
           <motion.div
             key="focus"
             initial={{ opacity: 0, scale: 0.95 }}
@@ -129,32 +135,30 @@ export default function Today() {
             exit={{ opacity: 0, scale: 0.95 }}
           >
             <div className="mb-4">
-              <h2 className="text-sm font-bold text-indigo-600 uppercase tracking-wider mb-1">Focus: Next Task</h2>
-              <p className="text-xs text-slate-400">Complete this, then move on.</p>
+              <h2 className="text-sm font-bold text-primary uppercase tracking-wider mb-1">Focus: Next Task</h2>
+              <p className="text-xs text-muted-foreground">Complete this, then move on.</p>
             </div>
             {nextDueTask ? (
               <TaskCard assignment={nextDueTask} onTap={setSelectedTask} />
             ) : (
-              <div className="bg-white rounded-2xl p-8 text-center border border-dashed border-slate-200">
+              <div className="bg-card rounded-2xl p-8 text-center border border-dashed border-border">
                 <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
-                <h3 className="font-semibold text-slate-900">Nothing to focus on!</h3>
-                <p className="text-sm text-slate-500 mt-1">All tasks done. You've earned a break.</p>
+                <h3 className="font-semibold text-foreground">Nothing to focus on!</h3>
+                <p className="text-sm text-muted-foreground mt-1">All tasks done. You've earned a break.</p>
               </div>
             )}
           </motion.div>
         ) : (
-          /* Normal view */
           <motion.div
             key="normal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            {/* Due Today Section */}
             <section className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-slate-800" data-testid="text-due-today-heading">Due Today</h2>
-                <span className="text-xs font-semibold px-2 py-1 bg-indigo-50 text-indigo-600 rounded-full" data-testid="badge-task-count">
+                <h2 className="text-lg font-bold text-foreground" data-testid="text-due-today-heading">Due Today</h2>
+                <span className="text-xs font-semibold px-2 py-1 bg-primary/10 text-primary rounded-full" data-testid="badge-task-count">
                   {todaysTasks.length} {todaysTasks.length === 1 ? "task" : "tasks"} left
                 </span>
               </div>
@@ -165,45 +169,53 @@ export default function Today() {
                     <Skeleton key={i} className="h-24 w-full rounded-2xl" />
                   ))
                 ) : todaysTasks.length > 0 ? (
-                  todaysTasks.map(task => (
+                  todaysTasks.map((task: AssignmentWithCourse) => (
                     <TaskCard key={task.id} assignment={task} onTap={setSelectedTask} />
                   ))
                 ) : allTodayDone ? (
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="bg-white rounded-2xl p-8 text-center border border-emerald-100 shadow-sm"
+                    className="bg-card rounded-2xl p-8 text-center border border-emerald-100 dark:border-emerald-900 shadow-sm"
                   >
-                    <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                       <PartyPopper className="w-8 h-8 text-emerald-500" />
                     </div>
-                    <h3 className="text-slate-900 font-bold text-lg" data-testid="text-all-caught-up">You're all caught up!</h3>
-                    <p className="text-slate-500 text-sm mt-1">All tasks completed for today.</p>
+                    <h3 className="text-foreground font-bold text-lg" data-testid="text-all-caught-up">You're all caught up!</h3>
+                    <p className="text-muted-foreground text-sm mt-1">All tasks completed for today.</p>
                   </motion.div>
                 ) : (
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="bg-white rounded-2xl p-8 text-center border border-dashed border-slate-200 shadow-sm"
+                    className="bg-card rounded-2xl p-8 text-center border border-dashed border-border shadow-sm"
                   >
-                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <PartyPopper className="w-8 h-8 text-indigo-500" />
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <PartyPopper className="w-8 h-8 text-primary" />
                     </div>
-                    <h3 className="text-slate-900 font-bold text-lg" data-testid="text-nothing-due">Nothing due today!</h3>
-                    <p className="text-slate-500 text-sm mt-1">Enjoy your free time</p>
+                    <h3 className="text-foreground font-bold text-lg" data-testid="text-nothing-due">Nothing due today!</h3>
+                    <p className="text-muted-foreground text-sm mt-1">Enjoy your free time</p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-3"
+                      onClick={() => setLocation("/week")}
+                      data-testid="button-view-upcoming"
+                    >
+                      View upcoming
+                    </Button>
                   </motion.div>
                 )}
               </div>
             </section>
 
-            {/* Completed Today */}
             {completedToday.length > 0 && (
               <section className="mb-8 opacity-75">
-                <h2 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider" data-testid="text-completed-heading">
+                <h2 className="text-sm font-bold text-muted-foreground mb-3 uppercase tracking-wider" data-testid="text-completed-heading">
                   Completed ({completedToday.length})
                 </h2>
                 <div className="space-y-3">
-                  {completedToday.map(task => (
+                  {completedToday.map((task: AssignmentWithCourse) => (
                     <TaskCard key={task.id} assignment={task} compact onTap={setSelectedTask} />
                   ))}
                 </div>
@@ -212,21 +224,21 @@ export default function Today() {
 
             {visibleRecs.length > 0 && (
               <section className="mb-8">
-                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2" data-testid="text-recommendations-heading">
+                <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2" data-testid="text-recommendations-heading">
                   <Lightbulb className="w-5 h-5 text-amber-500" />
                   Recommendations
                 </h2>
-                <Card className="bg-white rounded-2xl border-slate-100 overflow-hidden divide-y divide-slate-50">
+                <Card className="bg-card rounded-2xl border-border overflow-hidden divide-y divide-border">
                   {visibleRecs.map(rec => (
                     <div key={rec.id} className="p-4 relative" data-testid={`recommendation-${rec.id}`}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
-                          <p className="text-sm font-semibold text-slate-800">{rec.title}</p>
-                          <p className="text-xs text-slate-500 mt-0.5">{rec.description}</p>
+                          <p className="text-sm font-semibold text-foreground">{rec.title}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{rec.description}</p>
                           {rec.actionLabel && (
                             <button
                               onClick={() => rec.actionRoute && setLocation(rec.actionRoute)}
-                              className="text-xs font-semibold text-indigo-500 mt-2 flex items-center gap-1"
+                              className="text-xs font-semibold text-primary mt-2 flex items-center gap-1"
                               data-testid={`button-rec-action-${rec.id}`}
                             >
                               {rec.actionLabel}
@@ -237,7 +249,7 @@ export default function Today() {
                         {rec.dismissible && (
                           <button
                             onClick={() => setDismissedRecs(prev => new Set(prev).add(rec.id))}
-                            className="text-slate-300 flex-shrink-0"
+                            className="text-muted-foreground/50 flex-shrink-0"
                             data-testid={`button-dismiss-rec-${rec.id}`}
                           >
                             <X className="w-4 h-4" />
@@ -283,24 +295,28 @@ export default function Today() {
               </section>
             )}
 
-            {/* Coming Up Section */}
             <section>
-              <h2 className="text-lg font-bold text-slate-800 mb-4" data-testid="text-coming-up-heading">Coming Up Next</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4" data-testid="text-coming-up-heading">Coming Up Next</h2>
               <div className="space-y-3">
                 {isLoading ? (
                   <Skeleton className="h-20 w-full rounded-2xl" />
                 ) : upcomingTasks.length > 0 ? (
-                  upcomingTasks.map(task => (
-                    <div key={task.id} className="relative pl-6 py-2 border-l-2 border-slate-200 ml-2">
-                      <div className="absolute -left-[5px] top-4 w-2.5 h-2.5 rounded-full bg-slate-300 ring-4 ring-slate-50" />
-                      <p className="text-xs text-slate-400 font-semibold mb-0.5">
-                        {format(new Date(task.dueDate), "MMM d")} - {task.course.code}
+                  upcomingTasks.map((task: AssignmentWithCourse) => (
+                    <div
+                      key={task.id}
+                      className="relative pl-6 py-2 border-l-2 border-border ml-2 cursor-pointer"
+                      onClick={() => setSelectedTask(task)}
+                      data-testid={`upcoming-task-${task.id}`}
+                    >
+                      <div className="absolute -left-[5px] top-4 w-2.5 h-2.5 rounded-full bg-muted-foreground/40 ring-4 ring-background" />
+                      <p className="text-xs text-muted-foreground font-semibold mb-0.5">
+                        {getRelativeDate(task.dueDate)} - {task.course.code}
                       </p>
-                      <h4 className="text-sm font-medium text-slate-700">{task.title}</h4>
+                      <h4 className="text-sm font-medium text-foreground">{task.title}</h4>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-400 italic">No upcoming tasks scheduled.</p>
+                  <p className="text-sm text-muted-foreground italic">No upcoming tasks scheduled.</p>
                 )}
               </div>
             </section>

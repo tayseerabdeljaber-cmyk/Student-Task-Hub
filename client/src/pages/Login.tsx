@@ -24,7 +24,7 @@ export default function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -34,9 +34,9 @@ export default function Login({ onLogin }: LoginProps) {
           <div className="w-16 h-16 bg-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-200" data-testid="img-logo">
             <BookOpen className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2" data-testid="text-app-name">StudyFlow</h1>
-          <p className="text-slate-500 text-base" data-testid="text-tagline">Never miss an assignment again</p>
-          <p className="text-slate-400 text-sm mt-1">Your stress-free student planner</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2" data-testid="text-app-name">StudyFlow</h1>
+          <p className="text-muted-foreground text-base" data-testid="text-tagline">Never miss an assignment again</p>
+          <p className="text-muted-foreground text-sm mt-1">Your stress-free student planner</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -46,7 +46,7 @@ export default function Login({ onLogin }: LoginProps) {
               placeholder="Student's Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-12 rounded-xl bg-white border-slate-200 text-base"
+              className="h-12 rounded-xl bg-card border-border text-base"
               data-testid="input-email"
               required
             />
@@ -57,14 +57,14 @@ export default function Login({ onLogin }: LoginProps) {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="h-12 rounded-xl bg-white border-slate-200 text-base pr-12"
+              className="h-12 rounded-xl bg-card border-border text-base pr-12"
               data-testid="input-password"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
               data-testid="button-toggle-password"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -80,7 +80,7 @@ export default function Login({ onLogin }: LoginProps) {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-slate-500 mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           Don't have an account?{" "}
           <button
             onClick={() => setLocation("/signup")}

@@ -15,7 +15,7 @@ export function BottomNav() {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-slate-100 pb-safe pt-1 z-50" data-testid="nav-bottom">
+    <div className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-border pb-safe pt-1 z-50" data-testid="nav-bottom">
       <div className="flex justify-around items-center max-w-lg mx-auto px-1 h-14">
         {navItems.map((item) => {
           const isActive = location === item.href;
@@ -39,12 +39,12 @@ export function BottomNav() {
                   "w-5 h-5 mb-0.5 transition-colors duration-200",
                   isActive
                     ? "text-indigo-500 stroke-[2.5px]"
-                    : "text-slate-400"
+                    : "text-muted-foreground"
                 )}
               />
               <span className={cn(
                 "text-[9px] font-medium transition-colors duration-200",
-                isActive ? "text-indigo-500" : "text-slate-400"
+                isActive ? "text-indigo-500" : "text-muted-foreground"
               )}>
                 {item.label}
               </span>
