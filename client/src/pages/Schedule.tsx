@@ -378,7 +378,7 @@ export default function Schedule() {
             <Button size="icon" variant="ghost" onClick={() => navigate(-1)} data-testid="button-prev">
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <h2 className="text-lg font-bold text-slate-900 min-w-[140px] text-center" data-testid="text-schedule-header">{headerText}</h2>
+            <h2 className="text-lg font-bold text-foreground min-w-[140px] text-center" data-testid="text-schedule-header">{headerText}</h2>
             <Button size="icon" variant="ghost" onClick={() => navigate(1)} data-testid="button-next">
               <ChevronRight className="w-4 h-4" />
             </Button>
