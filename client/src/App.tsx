@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { BottomNav } from "@/components/BottomNav";
+import { SyncIndicator } from "@/components/SyncIndicator";
 
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
@@ -14,6 +15,7 @@ import AllTasks from "@/pages/AllTasks";
 import Settings from "@/pages/Settings";
 import Activities from "@/pages/Activities";
 import Schedule from "@/pages/Schedule";
+import Analytics from "@/pages/Analytics";
 import NotFound from "@/pages/not-found";
 
 function App() {
@@ -67,6 +69,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased pb-safe">
+        {showBottomNav && <SyncIndicator />}
         <Switch>
           <Route path="/login">
             {isLoggedIn ? <Redirect to="/" /> : <Login onLogin={handleLogin} />}
@@ -91,6 +94,9 @@ function App() {
           </Route>
           <Route path="/all">
             {!isLoggedIn ? <Redirect to="/login" /> : <AllTasks />}
+          </Route>
+          <Route path="/analytics">
+            {!isLoggedIn ? <Redirect to="/login" /> : <Analytics />}
           </Route>
           <Route path="/settings">
             {!isLoggedIn ? <Redirect to="/login" /> : <Settings userName={userName} userEmail={userEmail} onLogout={handleLogout} />}

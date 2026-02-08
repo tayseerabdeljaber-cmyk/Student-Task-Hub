@@ -1,23 +1,36 @@
 import { useState } from "react";
-import { Bell, X } from "lucide-react";
+import { useLocation } from "wouter";
+import {
+  Bell, X, BookOpen, AlertTriangle, Coffee, Trophy,
+  Flame, GraduationCap, FileText, CheckCircle2
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useAppNotifications } from "@/hooks/use-notifications";
+import { formatDistanceToNow } from "date-fns";
 
-const SAMPLE_NOTIFICATIONS = [
-  { id: 1, text: "CS Homework 2 due in 2 hours", time: "2h ago", read: false },
-  { id: 2, text: "Don't forget: PHYS Quiz tomorrow at 9am", time: "5h ago", read: false },
-  { id: 3, text: "You're on a 5-day streak! Keep it up", time: "1d ago", read: true },
-  { id: 4, text: "Lab Report 1 due in 2 days", time: "1d ago", read: true },
-];
+const ICON_MAP: Record<string, typeof Bell> = {
+  BookOpen,
+  AlertTriangle,
+  Coffee,
+  Trophy,
+  Flame,
+  GraduationCap,
+  FileText,
+  CheckCircle2,
+};
 
 export function NotificationsDropdown() {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState(SAMPLE_NOTIFICATIONS);
+  const [, setLocation] = useLocation();
+  const { unreadCount, grouped, markAsRead, markAllRead, dismiss } = useAppNotifications();
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  const markAsRead = (id: number) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  const handleTap = (id: string, route?: string) => {
+    markAsRead(id);
+    if (route) {
+      setOpen(false);
+      setLocation(route);
+    }
   };
 
   return (
@@ -43,35 +56,101 @@ export function NotificationsDropdown() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute right-0 top-12 w-72 bg-white rounded-2xl shadow-lg border border-slate-100 z-50 overflow-hidden"
+              className="absolute right-0 top-12 w-80 bg-white rounded-2xl shadow-lg border border-slate-100 z-50 overflow-hidden"
               data-testid="dropdown-notifications"
             >
               <div className="p-3 border-b border-slate-100 flex items-center justify-between">
                 <h3 className="font-semibold text-sm text-slate-900">Notifications</h3>
-                <button onClick={() => setOpen(false)} className="text-slate-400">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="max-h-64 overflow-y-auto">
-                {notifications.map(notif => (
-                  <button
-                    key={notif.id}
-                    onClick={() => markAsRead(notif.id)}
-                    className={cn(
-                      "w-full text-left px-4 py-3 border-b border-slate-50 transition-colors",
-                      !notif.read && "bg-indigo-50/50"
-                    )}
-                    data-testid={`notification-${notif.id}`}
-                  >
-                    <p className={cn(
-                      "text-sm",
-                      notif.read ? "text-slate-500" : "text-slate-800 font-medium"
-                    )}>
-                      {notif.text}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-0.5">{notif.time}</p>
+                <div className="flex items-center gap-2">
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={markAllRead}
+                      className="text-xs text-indigo-500 font-medium"
+                      data-testid="button-mark-all-read"
+                    >
+                      Mark all read
+                    </button>
+                  )}
+                  <button onClick={() => setOpen(false)} className="text-slate-400">
+                    <X className="w-4 h-4" />
                   </button>
-                ))}
+                </div>
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {grouped.length === 0 ? (
+                  <div className="py-8 text-center">
+                    <Bell className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                    <p className="text-sm text-slate-400">No notifications</p>
+                  </div>
+                ) : (
+                  grouped.map(group => (
+                    <div key={group.label}>
+                      <div className="px-4 py-1.5 bg-slate-50">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{group.label}</p>
+                      </div>
+                      {group.items.map(notif => {
+                        const Icon = ICON_MAP[notif.icon] || Bell;
+                        return (
+                          <div
+                            key={notif.id}
+                            className={cn(
+                              "relative group",
+                              !notif.read && "bg-indigo-50/40"
+                            )}
+                          >
+                            <button
+                              onClick={() => handleTap(notif.id, notif.route)}
+                              className="w-full text-left px-4 py-3 flex items-start gap-3"
+                              data-testid={`notification-${notif.id}`}
+                            >
+                              <div className={cn(
+                                "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
+                                notif.type === "assignment_due" && "bg-amber-100",
+                                notif.type === "study_time" && "bg-blue-100",
+                                notif.type === "break" && "bg-green-100",
+                                notif.type === "streak" && "bg-orange-100",
+                                notif.type === "achievement" && "bg-purple-100",
+                                notif.type === "exam_soon" && "bg-rose-100",
+                              )}>
+                                <Icon className={cn(
+                                  "w-4 h-4",
+                                  notif.type === "assignment_due" && "text-amber-600",
+                                  notif.type === "study_time" && "text-blue-600",
+                                  notif.type === "break" && "text-green-600",
+                                  notif.type === "streak" && "text-orange-600",
+                                  notif.type === "achievement" && "text-purple-600",
+                                  notif.type === "exam_soon" && "text-rose-600",
+                                )} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className={cn(
+                                  "text-sm leading-tight",
+                                  notif.read ? "text-slate-500" : "text-slate-800 font-medium"
+                                )}>
+                                  {notif.title}
+                                </p>
+                                <p className="text-xs text-slate-400 mt-0.5 truncate">{notif.body}</p>
+                                <p className="text-[10px] text-slate-300 mt-1">
+                                  {formatDistanceToNow(new Date(notif.timestamp), { addSuffix: true })}
+                                </p>
+                              </div>
+                              {!notif.read && (
+                                <div className="w-2 h-2 bg-indigo-500 rounded-full flex-shrink-0 mt-2" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => dismiss(notif.id)}
+                              className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity text-slate-300"
+                              data-testid={`dismiss-notification-${notif.id}`}
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))
+                )}
               </div>
             </motion.div>
           </>

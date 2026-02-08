@@ -1,13 +1,36 @@
-import { Sparkles, X, Check } from "lucide-react";
+import { Sparkles, X, Check, Star, GraduationCap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useSubscription } from "@/hooks/use-preferences";
 
 interface PremiumModalProps {
   open: boolean;
   onClose: () => void;
+  feature?: string;
 }
 
-export function PremiumModal({ open, onClose }: PremiumModalProps) {
+const PREMIUM_FEATURES = [
+  "AI-powered schedule planning",
+  "Gradescope & Piazza sync",
+  "Unlimited activities",
+  "Advanced study insights",
+  "Custom themes",
+  "Priority support",
+];
+
+export function PremiumModal({ open, onClose, feature }: PremiumModalProps) {
+  const sub = useSubscription();
+
+  const handleStartTrial = () => {
+    sub.startTrial();
+    onClose();
+  };
+
+  const handleUpgrade = () => {
+    sub.upgrade();
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -30,46 +53,53 @@ export function PremiumModal({ open, onClose }: PremiumModalProps) {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="text-center mb-6">
+            <div className="text-center mb-5">
               <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-slate-900">Upgrade to Premium</h2>
-              <p className="text-sm text-slate-500 mt-1">Get AI-powered study plans based on your workload</p>
+              <h2 className="text-xl font-bold text-slate-900">
+                {feature ? "Premium Feature" : "Upgrade to Premium"}
+              </h2>
+              {feature && (
+                <p className="text-sm text-slate-500 mt-1">
+                  This feature requires a Premium subscription
+                </p>
+              )}
             </div>
 
-            {/* Blurred sample plan */}
-            <div className="relative mb-6 rounded-xl bg-slate-50 p-4 overflow-hidden">
-              <div className="blur-sm select-none">
-                <p className="text-xs font-semibold text-slate-800 mb-2">Your Study Plan for Today</p>
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <Check className="w-3 h-3 text-emerald-500" />
-                    <span className="text-xs text-slate-600">9:00 AM - Review PHYS Chapter 3</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-3 h-3 text-emerald-500" />
-                    <span className="text-xs text-slate-600">10:30 AM - CS Homework (45 min)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full border border-slate-300" />
-                    <span className="text-xs text-slate-600">2:00 PM - Math Problem Set</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full border border-slate-300" />
-                    <span className="text-xs text-slate-600">4:00 PM - ENGR Lab prep</span>
-                  </div>
+            <div className="space-y-2.5 mb-5">
+              {PREMIUM_FEATURES.map(f => (
+                <div key={f} className="flex items-center gap-2.5">
+                  <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                  <span className="text-sm text-slate-700">{f}</span>
                 </div>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs font-semibold text-indigo-600 bg-white/80 px-3 py-1 rounded-full shadow-sm">
-                  Premium Feature
-                </span>
+              ))}
+            </div>
+
+            <div className="bg-slate-50 rounded-xl p-4 mb-5 text-center">
+              <p className="text-2xl font-bold text-slate-900">$4.99<span className="text-sm font-normal text-slate-500">/month</span></p>
+              <p className="text-xs text-slate-500 mt-0.5">or $39.99/year (save 33%)</p>
+              <div className="flex items-center justify-center gap-1.5 mt-2">
+                <GraduationCap className="w-3.5 h-3.5 text-indigo-500" />
+                <span className="text-xs text-indigo-600 font-medium">First month free with .edu email</span>
               </div>
             </div>
 
             <Button
-              className="w-full h-12 rounded-xl text-base font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
+              size="lg"
+              className="w-full rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
+              onClick={handleStartTrial}
+              data-testid="button-start-trial"
+            >
+              <Star className="w-4 h-4 mr-2" />
+              Start 7-Day Free Trial
+            </Button>
+
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full rounded-xl font-semibold mt-2"
+              onClick={handleUpgrade}
               data-testid="button-upgrade"
             >
               Upgrade Now - $4.99/month

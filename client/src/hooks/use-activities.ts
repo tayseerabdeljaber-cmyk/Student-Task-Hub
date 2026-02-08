@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
-import type { InsertActivity, InsertScheduleBlock } from "@shared/schema";
+import type { InsertActivity, InsertScheduleBlock, ScheduleBlock } from "@shared/schema";
 
 const credentials = "include" as const;
 
@@ -72,7 +72,7 @@ export function useDeleteActivity() {
 }
 
 export function useScheduleBlocks() {
-  return useQuery({
+  return useQuery<ScheduleBlock[]>({
     queryKey: ["/api/schedule-blocks"],
     queryFn: async () => {
       const res = await fetch("/api/schedule-blocks", { credentials });

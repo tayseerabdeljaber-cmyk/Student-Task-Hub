@@ -1,23 +1,37 @@
 import { useState } from "react";
 import { format } from "date-fns";
+import { useLocation } from "wouter";
 import { useAssignments } from "@/hooks/use-assignments";
+import { useScheduleBlocks } from "@/hooks/use-activities";
+import { useRecommendations } from "@/hooks/use-recommendations";
+import { useSubscription } from "@/hooks/use-preferences";
 import { TaskCard } from "@/components/TaskCard";
 import { NotificationsDropdown } from "@/components/NotificationsDropdown";
 import { PremiumModal } from "@/components/PremiumModal";
 import { TaskDetailModal } from "@/components/TaskDetailModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Flame, Sparkles, Focus, X, PartyPopper } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import {
+  CheckCircle2, Flame, Sparkles, Focus, X, PartyPopper,
+  Lightbulb, ChevronRight, Star, ArrowRight, TrendingUp
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AssignmentWithCourse } from "@shared/schema";
 
 export default function Today() {
   const { data: assignments, isLoading } = useAssignments();
+  const { data: scheduleBlocks } = useScheduleBlocks();
+  const [, setLocation] = useLocation();
   const [focusMode, setFocusMode] = useState(false);
   const [premiumOpen, setPremiumOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<AssignmentWithCourse | null>(null);
+  const [dismissedRecs, setDismissedRecs] = useState<Set<string>>(new Set());
+  const recommendations = useRecommendations(assignments, scheduleBlocks);
+  const sub = useSubscription();
 
   const streak = Number(localStorage.getItem("studyStreak") || "5");
+  const visibleRecs = recommendations.filter(r => !dismissedRecs.has(r.id));
 
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -74,8 +88,8 @@ export default function Today() {
         </div>
       </header>
 
-      {/* Focus Mode Toggle & Premium */}
-      <div className="flex items-center gap-2 mb-6">
+      {/* Focus Mode Toggle, Premium & Insights */}
+      <div className="flex items-center gap-2 mb-6 flex-wrap">
         <Button
           variant="outline"
           onClick={() => setFocusMode(!focusMode)}
@@ -93,6 +107,15 @@ export default function Today() {
         >
           <Sparkles className="w-3.5 h-3.5 text-purple-500" />
           Study Plan
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => setLocation("/analytics")}
+          className="rounded-full text-xs font-semibold gap-1.5"
+          data-testid="button-insights"
+        >
+          <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+          Insights
         </Button>
       </div>
 
@@ -184,6 +207,79 @@ export default function Today() {
                     <TaskCard key={task.id} assignment={task} compact onTap={setSelectedTask} />
                   ))}
                 </div>
+              </section>
+            )}
+
+            {visibleRecs.length > 0 && (
+              <section className="mb-8">
+                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2" data-testid="text-recommendations-heading">
+                  <Lightbulb className="w-5 h-5 text-amber-500" />
+                  Recommendations
+                </h2>
+                <Card className="bg-white rounded-2xl border-slate-100 overflow-hidden divide-y divide-slate-50">
+                  {visibleRecs.map(rec => (
+                    <div key={rec.id} className="p-4 relative" data-testid={`recommendation-${rec.id}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-slate-800">{rec.title}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">{rec.description}</p>
+                          {rec.actionLabel && (
+                            <button
+                              onClick={() => rec.actionRoute && setLocation(rec.actionRoute)}
+                              className="text-xs font-semibold text-indigo-500 mt-2 flex items-center gap-1"
+                              data-testid={`button-rec-action-${rec.id}`}
+                            >
+                              {rec.actionLabel}
+                              <ArrowRight className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                        {rec.dismissible && (
+                          <button
+                            onClick={() => setDismissedRecs(prev => new Set(prev).add(rec.id))}
+                            className="text-slate-300 flex-shrink-0"
+                            data-testid={`button-dismiss-rec-${rec.id}`}
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </Card>
+              </section>
+            )}
+
+            {!sub.isPremium && !sub.trialDismissed && (
+              <section className="mb-8">
+                <Card className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-4 text-white border-0" data-testid="card-trial-banner">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Star className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold">Start your 7-day free trial</p>
+                      <p className="text-xs text-white/80 mt-0.5">Access all premium features</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        className="bg-white text-indigo-600 text-xs font-bold"
+                        onClick={sub.startTrial}
+                        data-testid="button-start-trial-banner"
+                      >
+                        Start
+                      </Button>
+                      <button
+                        onClick={sub.dismissTrialBanner}
+                        className="text-white/50"
+                        data-testid="button-dismiss-trial"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </Card>
               </section>
             )}
 
