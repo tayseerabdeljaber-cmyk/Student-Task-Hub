@@ -3,6 +3,8 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
 
+export * from "./models/auth";
+
 export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
   code: text("code").notNull(),

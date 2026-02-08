@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
   User, Link2, Bell, Flame, Moon, Info, LogOut,
@@ -19,15 +18,14 @@ import { Card } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useSyncStatus, useNotificationPreferences, useSubscription } from "@/hooks/use-preferences";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
-interface SettingsProps {
-  userName: string;
-  userEmail: string;
-  onLogout: () => void;
-}
-
-export default function Settings({ userName, userEmail, onLogout }: SettingsProps) {
-  const [, setLocation] = useLocation();
+export default function Settings() {
+  const { user } = useAuth();
+  const userName = user?.firstName
+    ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`
+    : "Student";
+  const userEmail = user?.email || "";
   const sync = useSyncStatus();
   const notifs = useNotificationPreferences();
   const sub = useSubscription();
@@ -40,8 +38,7 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
   const [feedbackText, setFeedbackText] = useState("");
 
   const handleLogout = () => {
-    onLogout();
-    setLocation("/login");
+    window.location.href = "/api/logout";
   };
 
   const handleExportData = async () => {
@@ -99,9 +96,13 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
 
         <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center">
-              <User className="w-7 h-7 text-indigo-500" />
-            </div>
+            {user?.profileImageUrl ? (
+              <img src={user.profileImageUrl} alt={userName} className="w-14 h-14 rounded-full object-cover" />
+            ) : (
+              <div className="w-14 h-14 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
+                <User className="w-7 h-7 text-indigo-500" />
+              </div>
+            )}
             <div>
               <h2 className="font-semibold text-foreground text-lg" data-testid="text-profile-name">{userName}</h2>
               <p className="text-sm text-muted-foreground" data-testid="text-profile-email">{userEmail}</p>
