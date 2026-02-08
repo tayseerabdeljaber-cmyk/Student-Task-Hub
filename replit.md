@@ -33,14 +33,21 @@ A mobile-first student task management app designed to feel stress-relieving and
 ## Project Architecture
 - Frontend: React + TypeScript + Tailwind + wouter routing + TanStack Query
 - Backend: Express + PostgreSQL + Drizzle ORM
-- Auth: localStorage-based (demo/MVP)
+- Auth: Replit Auth (OpenID Connect) with passport, sessions stored in PostgreSQL
 - State: TanStack Query for server state, useState/localStorage for UI state
 
+## Authentication
+- Server: setupAuth() + registerAuthRoutes() in server/routes.ts (before other routes)
+- Auth module: server/replit_integrations/auth/ (replitAuth.ts, storage.ts, routes.ts)
+- Client hook: client/src/hooks/use-auth.ts (useAuth)
+- Auth routes: /api/login, /api/logout, /api/callback, /api/auth/user
+- Schema: shared/models/auth.ts (users, sessions tables)
+- Landing page shown for logged-out users, authenticated app for logged-in users
+
 ## Key Routes
-- `/login` - Login page (default for unauthenticated users)
-- `/signup` - Signup page
-- `/onboarding` - Multi-step onboarding (welcome, platforms, preferences, ready)
-- `/` - Today View (main page with recommendations, trial banner, focus mode)
+- `/` - Landing page (logged out) or Today View (logged in)
+- `/api/login` - Replit Auth login flow
+- `/api/logout` - Logout flow
 - `/week` - Week calendar view
 - `/activities` - Activities management (classes, recurring, events, sleep)
 - `/schedule` - Calendar/schedule with AI generation
