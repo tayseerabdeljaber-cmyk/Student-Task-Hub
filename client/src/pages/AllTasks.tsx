@@ -82,9 +82,9 @@ export default function AllTasks() {
   const { overdue, thisWeek, later, completed } = categorizeTasks(assignments);
 
   return (
-    <div className="pb-24 pt-8 px-4 max-w-md mx-auto min-h-screen bg-slate-50">
+    <div className="pb-24 pt-8 px-4 max-w-md mx-auto min-h-screen bg-background">
       <header className="mb-4">
-        <h1 className="text-3xl font-bold text-slate-900 mb-4" data-testid="text-all-tasks-title">All Tasks</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-4" data-testid="text-all-tasks-title">All Tasks</h1>
 
         {/* Search Bar */}
         <div className="relative mb-3">
@@ -142,13 +142,13 @@ export default function AllTasks() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-8 text-center border border-dashed border-slate-200 shadow-sm"
+            className="bg-card rounded-2xl p-8 text-center border border-dashed border-border shadow-sm"
           >
-            <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <SearchX className="w-7 h-7 text-slate-400" />
+            <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+              <SearchX className="w-7 h-7 text-muted-foreground" />
             </div>
-            <h3 className="text-slate-900 font-semibold" data-testid="text-no-search-results">No results found</h3>
-            <p className="text-sm text-slate-500 mt-1">No assignments match "{searchQuery}"</p>
+            <h3 className="text-foreground font-semibold" data-testid="text-no-search-results">No results found</h3>
+            <p className="text-sm text-muted-foreground mt-1">No assignments match "{searchQuery}"</p>
             <button
               onClick={() => setSearchQuery("")}
               className="text-sm text-indigo-500 font-medium mt-3"
@@ -163,13 +163,13 @@ export default function AllTasks() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-8 text-center border border-dashed border-slate-200 shadow-sm"
+            className="bg-card rounded-2xl p-8 text-center border border-dashed border-border shadow-sm"
           >
             <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <CheckCircle2 className="w-7 h-7 text-emerald-500" />
             </div>
-            <h3 className="text-slate-900 font-semibold">No assignments yet</h3>
-            <p className="text-sm text-slate-500 mt-1">Your assignments will appear here once synced</p>
+            <h3 className="text-foreground font-semibold">No assignments yet</h3>
+            <p className="text-sm text-muted-foreground mt-1">Your assignments will appear here once synced</p>
           </motion.div>
         )}
 
@@ -200,7 +200,7 @@ export default function AllTasks() {
                 <TaskCard key={task.id} assignment={task} onTap={setSelectedTask} />
               ))
             ) : (
-              !isLoading && <p className="text-slate-400 text-sm italic">No tasks due this week.</p>
+              !isLoading && <p className="text-muted-foreground text-sm italic">No tasks due this week.</p>
             )}
           </div>
         </section>
@@ -233,8 +233,8 @@ export default function AllTasks() {
 
         {/* Completed Section */}
         {completed.length > 0 && (
-          <section className="pt-4 border-t border-slate-200">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3" data-testid="text-completed-heading">
+          <section className="pt-4 border-t border-border">
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3" data-testid="text-completed-heading">
               Completed ({completed.length})
             </h2>
             <div className="space-y-3 opacity-60">

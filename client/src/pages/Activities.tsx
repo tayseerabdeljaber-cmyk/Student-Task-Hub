@@ -50,8 +50,8 @@ function ActivityCard({ activity, onEdit, onDelete }: { activity: Activity; onEd
           <Icon className="w-4.5 h-4.5" style={{ color: activity.color }} />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-900 text-sm truncate" data-testid={`text-activity-name-${activity.id}`}>{activity.name}</h4>
-          <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 flex-wrap">
+          <h4 className="font-semibold text-foreground text-sm truncate" data-testid={`text-activity-name-${activity.id}`}>{activity.name}</h4>
+          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
               {activity.frequency === "daily" ? "Daily" : formatDays(activity.daysOfWeek)} {formatTime(activity.startTime)}-{activity.endTime ? formatTime(activity.endTime) : ""}
@@ -95,7 +95,7 @@ function CollapsibleSection({ title, count, defaultOpen = true, children }: { ti
     <div className="mb-4">
       <button onClick={() => setOpen(!open)} className="flex items-center gap-2 w-full text-left py-2" data-testid={`button-toggle-section-${title.toLowerCase().replace(/\s+/g, "-")}`}>
         {open ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
-        <span className="font-semibold text-slate-700 text-sm">{title}</span>
+        <span className="font-semibold text-foreground text-sm">{title}</span>
         <Badge variant="secondary" className="text-[10px]">{count}</Badge>
       </button>
       {open && <div className="space-y-2 mt-1">{children}</div>}
@@ -194,8 +194,8 @@ export default function Activities() {
       <div className="px-5 pt-8 pb-4">
         <div className="flex items-center justify-between gap-2 mb-1">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900" data-testid="text-activities-title">My Activities</h1>
-            <p className="text-sm text-slate-500 mt-0.5">Manage your classes and recurring commitments</p>
+            <h1 className="text-2xl font-bold text-foreground" data-testid="text-activities-title">My Activities</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Manage your classes and recurring commitments</p>
           </div>
           <Button size="icon" onClick={handleAddNew} data-testid="button-add-activity">
             <Plus className="w-4 h-4" />
@@ -206,7 +206,7 @@ export default function Activities() {
       <div className="px-5">
         <CollapsibleSection title="Classes" count={classes.length}>
           {classes.length === 0 ? (
-            <p className="text-sm text-slate-400 py-2">No classes added yet</p>
+            <p className="text-sm text-muted-foreground py-2">No classes added yet</p>
           ) : (
             classes.map((a: Activity) => (
               <ActivityCard key={a.id} activity={a} onEdit={handleEdit} onDelete={handleDelete} />
@@ -217,7 +217,7 @@ export default function Activities() {
         <CollapsibleSection title="Recurring Activities" count={recurring.length}>
           {dailyActivities.length > 0 && (
             <div className="mb-3">
-              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 pl-1">Daily</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 pl-1">Daily</p>
               <div className="space-y-2">
                 {dailyActivities.map((a: Activity) => (
                   <ActivityCard key={a.id} activity={a} onEdit={handleEdit} onDelete={handleDelete} />
@@ -227,7 +227,7 @@ export default function Activities() {
           )}
           {weeklyActivities.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 pl-1">Weekly</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 pl-1">Weekly</p>
               <div className="space-y-2">
                 {weeklyActivities.map((a: Activity) => (
                   <ActivityCard key={a.id} activity={a} onEdit={handleEdit} onDelete={handleDelete} />
@@ -235,12 +235,12 @@ export default function Activities() {
               </div>
             </div>
           )}
-          {recurring.length === 0 && <p className="text-sm text-slate-400 py-2">No recurring activities</p>}
+          {recurring.length === 0 && <p className="text-sm text-muted-foreground py-2">No recurring activities</p>}
         </CollapsibleSection>
 
         <CollapsibleSection title="Upcoming Events" count={events.length} defaultOpen={events.length > 0}>
           {events.length === 0 ? (
-            <p className="text-sm text-slate-400 py-2">No upcoming one-time events</p>
+            <p className="text-sm text-muted-foreground py-2">No upcoming one-time events</p>
           ) : (
             events.map((a: Activity) => (
               <ActivityCard key={a.id} activity={a} onEdit={handleEdit} onDelete={handleDelete} />
@@ -251,7 +251,7 @@ export default function Activities() {
         <div className="mb-4">
           <div className="flex items-center gap-2 py-2">
             <Moon className="w-4 h-4 text-slate-400" />
-            <span className="font-semibold text-slate-700 text-sm">Sleep Schedule</span>
+            <span className="font-semibold text-foreground text-sm">Sleep Schedule</span>
           </div>
           <Card className="p-4" data-testid="card-sleep-schedule">
             {editingSleep ? (
@@ -291,24 +291,24 @@ export default function Activities() {
         <div className="mb-8">
           <div className="flex items-center gap-2 py-2">
             <BarChart3 className="w-4 h-4 text-slate-400" />
-            <span className="font-semibold text-slate-700 text-sm">Weekly Summary</span>
+            <span className="font-semibold text-foreground text-sm">Weekly Summary</span>
           </div>
           <Card className="p-4" data-testid="card-weekly-stats">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className="text-xs text-slate-400">Class hours</p>
-                <p className="text-lg font-bold text-slate-900" data-testid="text-class-hours">{stats.classHrs} hrs</p>
+                <p className="text-xs text-muted-foreground">Class hours</p>
+                <p className="text-lg font-bold text-foreground" data-testid="text-class-hours">{stats.classHrs} hrs</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Activity hours</p>
-                <p className="text-lg font-bold text-slate-900" data-testid="text-activity-hours">{stats.activityHrs} hrs</p>
+                <p className="text-xs text-muted-foreground">Activity hours</p>
+                <p className="text-lg font-bold text-foreground" data-testid="text-activity-hours">{stats.activityHrs} hrs</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Total scheduled</p>
+                <p className="text-xs text-muted-foreground">Total scheduled</p>
                 <p className="text-lg font-bold text-indigo-600">{stats.totalScheduled} hrs</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Available study time</p>
+                <p className="text-xs text-muted-foreground">Available study time</p>
                 <p className="text-lg font-bold text-emerald-600" data-testid="text-available-hours">{stats.available} hrs</p>
               </div>
             </div>

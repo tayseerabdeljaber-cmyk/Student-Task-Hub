@@ -291,16 +291,16 @@ export default function Today() {
                   <Skeleton className="h-20 w-full rounded-2xl" />
                 ) : upcomingTasks.length > 0 ? (
                   upcomingTasks.map(task => (
-                    <div key={task.id} className="relative pl-6 py-2 border-l-2 border-slate-200 ml-2">
-                      <div className="absolute -left-[5px] top-4 w-2.5 h-2.5 rounded-full bg-slate-300 ring-4 ring-slate-50" />
-                      <p className="text-xs text-slate-400 font-semibold mb-0.5">
+                    <div key={task.id} className="relative pl-6 py-2 border-l-2 border-border ml-2">
+                      <div className="absolute -left-[5px] top-4 w-2.5 h-2.5 rounded-full bg-muted-foreground ring-4 ring-background" />
+                      <p className="text-xs text-muted-foreground font-semibold mb-0.5">
                         {format(new Date(task.dueDate), "MMM d")} - {task.course.code}
                       </p>
-                      <h4 className="text-sm font-medium text-slate-700">{task.title}</h4>
+                      <h4 className="text-sm font-medium text-foreground">{task.title}</h4>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-400 italic">No upcoming tasks scheduled.</p>
+                  <p className="text-sm text-muted-foreground italic">No upcoming tasks scheduled.</p>
                 )}
               </div>
             </section>

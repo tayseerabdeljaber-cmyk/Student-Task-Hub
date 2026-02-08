@@ -120,7 +120,7 @@ export default function Analytics() {
 
   if (isLoading || !stats) {
     return (
-      <div className="pb-24 px-4 pt-8 max-w-md mx-auto min-h-screen bg-slate-50">
+      <div className="pb-24 px-4 pt-8 max-w-md mx-auto min-h-screen bg-background">
         <Skeleton className="h-8 w-32 mb-6" />
         <div className="space-y-4">
           <Skeleton className="h-40 w-full rounded-2xl" />
@@ -131,58 +131,58 @@ export default function Analytics() {
   }
 
   return (
-    <div className="pb-24 px-4 pt-8 max-w-md mx-auto min-h-screen bg-slate-50">
+    <div className="pb-24 px-4 pt-8 max-w-md mx-auto min-h-screen bg-background">
       <header className="mb-6 flex items-center gap-3">
         <button
           onClick={() => setLocation("/")}
-          className="w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center"
+          className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center"
           data-testid="button-back-analytics"
         >
-          <ArrowLeft className="w-4 h-4 text-slate-600" />
+          <ArrowLeft className="w-4 h-4 text-muted-foreground" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-slate-900" data-testid="text-analytics-title">Study Insights</h1>
-          <p className="text-xs text-slate-400">Your progress at a glance</p>
+          <h1 className="text-xl font-bold text-foreground" data-testid="text-analytics-title">Study Insights</h1>
+          <p className="text-xs text-muted-foreground">Your progress at a glance</p>
         </div>
       </header>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <Card className="p-4 bg-white rounded-2xl border-slate-100" data-testid="stat-completion-rate">
+        <Card className="p-4 bg-card rounded-2xl border-border" data-testid="stat-completion-rate">
           <div className="flex items-center gap-2 mb-2">
             <Target className="w-4 h-4 text-indigo-500" />
-            <span className="text-xs font-medium text-slate-500">Completion</span>
+            <span className="text-xs font-medium text-muted-foreground">Completion</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">{stats.completionRate}%</p>
-          <p className="text-[10px] text-slate-400">{stats.completed} of {stats.total}</p>
+          <p className="text-2xl font-bold text-foreground">{stats.completionRate}%</p>
+          <p className="text-[10px] text-muted-foreground">{stats.completed} of {stats.total}</p>
         </Card>
-        <Card className="p-4 bg-white rounded-2xl border-slate-100" data-testid="stat-streak">
+        <Card className="p-4 bg-card rounded-2xl border-border" data-testid="stat-streak">
           <div className="flex items-center gap-2 mb-2">
             <Flame className="w-4 h-4 text-orange-500" />
-            <span className="text-xs font-medium text-slate-500">Streak</span>
+            <span className="text-xs font-medium text-muted-foreground">Streak</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">{stats.streak}</p>
-          <p className="text-[10px] text-slate-400">day streak</p>
+          <p className="text-2xl font-bold text-foreground">{stats.streak}</p>
+          <p className="text-[10px] text-muted-foreground">day streak</p>
         </Card>
-        <Card className="p-4 bg-white rounded-2xl border-slate-100" data-testid="stat-pending">
+        <Card className="p-4 bg-card rounded-2xl border-border" data-testid="stat-pending">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-amber-500" />
-            <span className="text-xs font-medium text-slate-500">Pending</span>
+            <span className="text-xs font-medium text-muted-foreground">Pending</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">{stats.pending}</p>
-          <p className="text-[10px] text-slate-400">assignments left</p>
+          <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
+          <p className="text-[10px] text-muted-foreground">assignments left</p>
         </Card>
-        <Card className="p-4 bg-white rounded-2xl border-slate-100" data-testid="stat-study-blocks">
+        <Card className="p-4 bg-card rounded-2xl border-border" data-testid="stat-study-blocks">
           <div className="flex items-center gap-2 mb-2">
             <BookOpen className="w-4 h-4 text-emerald-500" />
-            <span className="text-xs font-medium text-slate-500">Study Blocks</span>
+            <span className="text-xs font-medium text-muted-foreground">Study Blocks</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">{stats.completedBlocks}</p>
-          <p className="text-[10px] text-slate-400">of {stats.totalStudyBlocks} completed</p>
+          <p className="text-2xl font-bold text-foreground">{stats.completedBlocks}</p>
+          <p className="text-[10px] text-muted-foreground">of {stats.totalStudyBlocks} completed</p>
         </Card>
       </div>
 
-      <Card className="p-4 bg-white rounded-2xl border-slate-100 mb-6" data-testid="chart-weekly-activity">
-        <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <Card className="p-4 bg-card rounded-2xl border-border mb-6" data-testid="chart-weekly-activity">
+        <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-indigo-500" />
           This Week's Activity
         </h3>
@@ -201,8 +201,8 @@ export default function Analytics() {
         </ResponsiveContainer>
       </Card>
 
-      <Card className="p-4 bg-white rounded-2xl border-slate-100 mb-6" data-testid="chart-upcoming-workload">
-        <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <Card className="p-4 bg-card rounded-2xl border-border mb-6" data-testid="chart-upcoming-workload">
+        <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
           <BarChart3 className="w-4 h-4 text-purple-500" />
           Upcoming Workload
         </h3>
@@ -225,8 +225,8 @@ export default function Analytics() {
         </ResponsiveContainer>
       </Card>
 
-      <Card className="p-4 bg-white rounded-2xl border-slate-100 mb-6" data-testid="chart-course-distribution">
-        <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <Card className="p-4 bg-card rounded-2xl border-border mb-6" data-testid="chart-course-distribution">
+        <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-emerald-500" />
           By Course
         </h3>
@@ -253,16 +253,16 @@ export default function Analytics() {
             {stats.courseData.map((c, i) => (
               <div key={c.name} className="flex items-center gap-2 text-xs">
                 <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                <span className="text-slate-600 font-medium">{c.name}</span>
-                <span className="text-slate-400 ml-auto">{c.value}</span>
+                <span className="text-muted-foreground font-medium">{c.name}</span>
+                <span className="text-muted-foreground ml-auto">{c.value}</span>
               </div>
             ))}
           </div>
         </div>
       </Card>
 
-      <Card className="p-4 bg-white rounded-2xl border-slate-100 mb-6" data-testid="chart-by-type">
-        <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <Card className="p-4 bg-card rounded-2xl border-border mb-6" data-testid="chart-by-type">
+        <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-teal-500" />
           Completion by Type
         </h3>
@@ -270,10 +270,10 @@ export default function Analytics() {
           {stats.typeData.map(t => (
             <div key={t.type}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium text-slate-700">{t.type}</span>
-                <span className="text-[10px] text-slate-400">{t.completed}/{t.total} ({t.rate}%)</span>
+                <span className="text-xs font-medium text-foreground">{t.type}</span>
+                <span className="text-[10px] text-muted-foreground">{t.completed}/{t.total} ({t.rate}%)</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-muted rounded-full h-2">
                 <div
                   className="bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full h-2 transition-all duration-500"
                   style={{ width: `${t.rate}%` }}

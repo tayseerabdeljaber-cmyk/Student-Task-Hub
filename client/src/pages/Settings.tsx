@@ -67,41 +67,41 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
   const recurringCount = 9;
 
   return (
-    <div className="pb-24 pt-8 px-4 max-w-md mx-auto min-h-screen bg-slate-50">
+    <div className="pb-24 pt-8 px-4 max-w-md mx-auto min-h-screen bg-background">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-3xl font-bold text-slate-900 mb-6" data-testid="text-settings-title">Settings</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-6" data-testid="text-settings-title">Settings</h1>
 
-        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
+        <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center">
               <User className="w-7 h-7 text-indigo-500" />
             </div>
             <div>
-              <h2 className="font-semibold text-slate-900 text-lg" data-testid="text-profile-name">{userName}</h2>
-              <p className="text-sm text-slate-500" data-testid="text-profile-email">{userEmail}</p>
-              <p className="text-xs text-slate-400 mt-0.5">Purdue University</p>
+              <h2 className="font-semibold text-foreground text-lg" data-testid="text-profile-name">{userName}</h2>
+              <p className="text-sm text-muted-foreground" data-testid="text-profile-email">{userEmail}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Purdue University</p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+        <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <Diamond className="w-4 h-4 text-purple-500" />
             Subscription
           </h3>
           {sub.isPremium ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-700">Current Plan</span>
+                <span className="text-sm text-foreground">Current Plan</span>
                 <span className="text-sm font-semibold text-purple-600 flex items-center gap-1" data-testid="text-plan-tier">
                   Premium <Star className="w-3 h-3 fill-purple-500 text-purple-500" />
                 </span>
               </div>
               {sub.isInTrial && (
-                <p className="text-xs text-slate-500">Trial: {sub.daysLeftInTrial} days remaining</p>
+                <p className="text-xs text-muted-foreground">Trial: {sub.daysLeftInTrial} days remaining</p>
               )}
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">$4.99/month</span>
+                <span className="text-sm text-muted-foreground">$4.99/month</span>
                 <Button variant="outline" size="sm" onClick={() => setCancelSubOpen(true)} data-testid="button-cancel-subscription">
                   Cancel
                 </Button>
@@ -110,10 +110,10 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
           ) : (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-700">Current Plan</span>
-                <span className="text-sm font-medium text-slate-500" data-testid="text-plan-tier">Free</span>
+                <span className="text-sm text-foreground">Current Plan</span>
+                <span className="text-sm font-medium text-muted-foreground" data-testid="text-plan-tier">Free</span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Using {Math.min(recurringCount, 3)}/3 activity slots | 1 platform
               </p>
               <Button
@@ -128,14 +128,14 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
           )}
         </Card>
 
-        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Cloud className="w-4 h-4 text-slate-500" />
+        <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Cloud className="w-4 h-4 text-muted-foreground" />
             Data & Sync
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-700">Auto-sync</span>
+              <span className="text-sm text-foreground">Auto-sync</span>
               <Switch
                 checked={sync.autoSync}
                 onCheckedChange={sync.setAutoSync}
@@ -143,9 +143,9 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-700">Sync frequency</span>
+              <span className="text-sm text-foreground">Sync frequency</span>
               <Select value={sync.frequency} onValueChange={(v: any) => sync.setFrequency(v)}>
-                <SelectTrigger className="w-[140px] rounded-lg border-slate-200 bg-slate-50 h-9 text-xs" data-testid="select-sync-frequency">
+                <SelectTrigger className="w-[140px] rounded-lg border-border bg-muted h-9 text-xs" data-testid="select-sync-frequency">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -157,8 +157,8 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
               </Select>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-500">Last synced</span>
-              <span className="text-xs text-slate-400" data-testid="text-last-synced">
+              <span className="text-sm text-muted-foreground">Last synced</span>
+              <span className="text-xs text-muted-foreground" data-testid="text-last-synced">
                 {sync.lastSynced
                   ? new Date(sync.lastSynced).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                   : "Never"}
@@ -190,9 +190,9 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
           </div>
         </Card>
 
-        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Link2 className="w-4 h-4 text-slate-500" />
+        <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Link2 className="w-4 h-4 text-muted-foreground" />
             Connected Accounts
           </h3>
           <div className="space-y-4">
@@ -202,8 +202,8 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
                   <span className="text-orange-600 font-bold text-xs">B</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-700">Brightspace</p>
-                  <p className="text-xs text-slate-400">{brightspaceConnected ? "Connected" : "Not connected"}</p>
+                  <p className="text-sm font-medium text-foreground">Brightspace</p>
+                  <p className="text-xs text-muted-foreground">{brightspaceConnected ? "Connected" : "Not connected"}</p>
                 </div>
               </div>
               <Switch checked={brightspaceConnected} data-testid="switch-brightspace" />
@@ -214,8 +214,8 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
                   <span className="text-blue-600 font-bold text-xs">G</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-700">Gradescope</p>
-                  <p className="text-xs text-slate-400">Not connected</p>
+                  <p className="text-sm font-medium text-foreground">Gradescope</p>
+                  <p className="text-xs text-muted-foreground">Not connected</p>
                 </div>
               </div>
               <button className="text-xs text-indigo-500 font-medium flex items-center gap-1" data-testid="button-reconnect-gradescope">
@@ -229,14 +229,14 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
           </div>
         </Card>
 
-        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Bell className="w-4 h-4 text-slate-500" />
+        <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Bell className="w-4 h-4 text-muted-foreground" />
             Notifications
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-700">Enable Notifications</span>
+              <span className="text-sm text-foreground">Enable Notifications</span>
               <Switch
                 checked={notifs.enabled}
                 onCheckedChange={(v) => notifs.update({ enabled: v })}
@@ -246,9 +246,9 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
 
             {notifs.enabled && (
               <>
-                <div className="border-t border-slate-100 pt-3">
+                <div className="border-t border-border pt-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-slate-700">Assignment Reminders</span>
+                    <span className="text-sm font-medium text-foreground">Assignment Reminders</span>
                     <Switch
                       checked={notifs.assignmentReminders}
                       onCheckedChange={(v) => notifs.update({ assignmentReminders: v })}
@@ -257,31 +257,31 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
                   </div>
                   {notifs.assignmentReminders && (
                     <div className="ml-4 space-y-2">
-                      <label className="flex items-center gap-2 text-xs text-slate-600">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
                         <input type="checkbox" checked={notifs.reminderDayBefore}
                           onChange={(e) => notifs.update({ reminderDayBefore: e.target.checked })}
-                          className="rounded border-slate-300 text-indigo-500 w-3.5 h-3.5" />
+                          className="rounded border-border text-indigo-500 w-3.5 h-3.5" />
                         1 day before
                       </label>
-                      <label className="flex items-center gap-2 text-xs text-slate-600">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
                         <input type="checkbox" checked={notifs.reminderHourBefore}
                           onChange={(e) => notifs.update({ reminderHourBefore: e.target.checked })}
-                          className="rounded border-slate-300 text-indigo-500 w-3.5 h-3.5" />
+                          className="rounded border-border text-indigo-500 w-3.5 h-3.5" />
                         1 hour before
                       </label>
-                      <label className="flex items-center gap-2 text-xs text-slate-600">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
                         <input type="checkbox" checked={notifs.reminder15Min}
                           onChange={(e) => notifs.update({ reminder15Min: e.target.checked })}
-                          className="rounded border-slate-300 text-indigo-500 w-3.5 h-3.5" />
+                          className="rounded border-border text-indigo-500 w-3.5 h-3.5" />
                         15 minutes before
                       </label>
                     </div>
                   )}
                 </div>
 
-                <div className="border-t border-slate-100 pt-3">
+                <div className="border-t border-border pt-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-slate-700">Study Block Reminders</span>
+                    <span className="text-sm font-medium text-foreground">Study Block Reminders</span>
                     <Switch
                       checked={notifs.studyBlockReminders}
                       onCheckedChange={(v) => notifs.update({ studyBlockReminders: v })}
@@ -290,25 +290,25 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
                   </div>
                   {notifs.studyBlockReminders && (
                     <div className="ml-4 space-y-2">
-                      <label className="flex items-center gap-2 text-xs text-slate-600">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
                         <input type="checkbox" checked={notifs.studyReminder5Min}
                           onChange={(e) => notifs.update({ studyReminder5Min: e.target.checked })}
-                          className="rounded border-slate-300 text-indigo-500 w-3.5 h-3.5" />
+                          className="rounded border-border text-indigo-500 w-3.5 h-3.5" />
                         5 minutes before start
                       </label>
-                      <label className="flex items-center gap-2 text-xs text-slate-600">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
                         <input type="checkbox" checked={notifs.studyReminderAtStart}
                           onChange={(e) => notifs.update({ studyReminderAtStart: e.target.checked })}
-                          className="rounded border-slate-300 text-indigo-500 w-3.5 h-3.5" />
+                          className="rounded border-border text-indigo-500 w-3.5 h-3.5" />
                         At start time
                       </label>
                     </div>
                   )}
                 </div>
 
-                <div className="border-t border-slate-100 pt-3">
+                <div className="border-t border-border pt-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-slate-700">Break Reminders</span>
+                    <span className="text-sm font-medium text-foreground">Break Reminders</span>
                     <Switch
                       checked={notifs.breakReminders}
                       onCheckedChange={(v) => notifs.update({ breakReminders: v })}
@@ -317,19 +317,19 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
                   </div>
                   {notifs.breakReminders && (
                     <div className="ml-4">
-                      <label className="flex items-center gap-2 text-xs text-slate-600">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
                         <input type="checkbox" checked={notifs.breakAfter2Hours}
                           onChange={(e) => notifs.update({ breakAfter2Hours: e.target.checked })}
-                          className="rounded border-slate-300 text-indigo-500 w-3.5 h-3.5" />
+                          className="rounded border-border text-indigo-500 w-3.5 h-3.5" />
                         After 2 hours of study
                       </label>
                     </div>
                   )}
                 </div>
 
-                <div className="border-t border-slate-100 pt-3">
+                <div className="border-t border-border pt-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-slate-700">Streak Reminders</span>
+                    <span className="text-sm font-medium text-foreground">Streak Reminders</span>
                     <Switch
                       checked={notifs.streakReminders}
                       onCheckedChange={(v) => notifs.update({ streakReminders: v })}
@@ -338,18 +338,18 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
                   </div>
                   {notifs.streakReminders && (
                     <div className="ml-4 space-y-2">
-                      <label className="flex items-center gap-2 text-xs text-slate-600">
-                        <input type="checkbox" checked className="rounded border-slate-300 text-indigo-500 w-3.5 h-3.5" readOnly />
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <input type="checkbox" checked className="rounded border-border text-indigo-500 w-3.5 h-3.5" readOnly />
                         Daily streak check-in
                       </label>
                       <div className="flex items-center gap-2">
-                        <Clock className="w-3 h-3 text-slate-400" />
-                        <span className="text-xs text-slate-500">Time:</span>
+                        <Clock className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">Time:</span>
                         <input
                           type="time"
                           value={notifs.streakCheckInTime}
                           onChange={(e) => notifs.update({ streakCheckInTime: e.target.value })}
-                          className="text-xs border border-slate-200 rounded-md px-2 py-1 bg-slate-50"
+                          className="text-xs border border-border rounded-md px-2 py-1 bg-muted"
                           data-testid="input-streak-time"
                         />
                       </div>
@@ -357,10 +357,10 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
                   )}
                 </div>
 
-                <div className="border-t border-slate-100 pt-3">
+                <div className="border-t border-border pt-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-                      <Volume2 className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                      <Volume2 className="w-3.5 h-3.5 text-muted-foreground" />
                       Quiet Hours
                     </span>
                     <Switch
@@ -375,15 +375,15 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
                         type="time"
                         value={notifs.quietStart}
                         onChange={(e) => notifs.update({ quietStart: e.target.value })}
-                        className="text-xs border border-slate-200 rounded-md px-2 py-1 bg-slate-50"
+                        className="text-xs border border-border rounded-md px-2 py-1 bg-muted"
                         data-testid="input-quiet-start"
                       />
-                      <span className="text-xs text-slate-400">to</span>
+                      <span className="text-xs text-muted-foreground">to</span>
                       <input
                         type="time"
                         value={notifs.quietEnd}
                         onChange={(e) => notifs.update({ quietEnd: e.target.value })}
-                        className="text-xs border border-slate-200 rounded-md px-2 py-1 bg-slate-50"
+                        className="text-xs border border-border rounded-md px-2 py-1 bg-muted"
                         data-testid="input-quiet-end"
                       />
                     </div>
@@ -394,22 +394,22 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
           </div>
         </Card>
 
-        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+        <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <Flame className="w-4 h-4 text-orange-500" />
             Study Streak
           </h3>
           <div className="flex items-center gap-4 mb-4">
             <div className="text-center">
-              <p className="text-3xl font-bold text-slate-900" data-testid="text-streak-count">{streak}</p>
-              <p className="text-xs text-slate-500">day streak</p>
+              <p className="text-3xl font-bold text-foreground" data-testid="text-streak-count">{streak}</p>
+              <p className="text-xs text-muted-foreground">day streak</p>
             </div>
             <div className="flex-1 grid grid-cols-7 gap-1">
               {Array.from({ length: 14 }).map((_, i) => (
                 <div
                   key={i}
                   className={`w-full aspect-square rounded-sm ${
-                    i < streak + 2 ? "bg-indigo-500" : i < 10 ? "bg-indigo-200" : "bg-slate-100"
+                    i < streak + 2 ? "bg-indigo-500" : i < 10 ? "bg-indigo-200" : "bg-muted"
                   }`}
                 />
               ))}
@@ -417,44 +417,44 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
           </div>
         </Card>
 
-        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
+        <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Moon className="w-4 h-4 text-slate-500" />
-              <span className="font-semibold text-slate-900">Dark Mode</span>
+              <Moon className="w-4 h-4 text-muted-foreground" />
+              <span className="font-semibold text-foreground">Dark Mode</span>
             </div>
             <Switch checked={darkMode} onCheckedChange={handleDarkMode} data-testid="switch-dark-mode" />
           </div>
         </Card>
 
-        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Info className="w-4 h-4 text-slate-500" />
+        <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Info className="w-4 h-4 text-muted-foreground" />
             About
           </h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-500">Version</span>
-              <span className="text-sm text-slate-700 font-medium" data-testid="text-app-version">1.0.0</span>
+              <span className="text-sm text-muted-foreground">Version</span>
+              <span className="text-sm text-foreground font-medium" data-testid="text-app-version">1.0.0</span>
             </div>
-            <button className="w-full flex items-center justify-between text-sm text-slate-700 py-2" data-testid="button-feedback">
+            <button className="w-full flex items-center justify-between text-sm text-foreground py-2" data-testid="button-feedback">
               Give Feedback
-              <ChevronRight className="w-4 h-4 text-slate-400" />
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
         </Card>
 
-        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
+        <Card className="p-5 rounded-2xl mb-4 bg-card border-border">
           <button
             onClick={handleExportData}
-            className="w-full flex items-center justify-between text-sm text-slate-700 py-1"
+            className="w-full flex items-center justify-between text-sm text-foreground py-1"
             data-testid="button-export-data"
           >
             <div className="flex items-center gap-2">
-              <Download className="w-4 h-4 text-slate-500" />
+              <Download className="w-4 h-4 text-muted-foreground" />
               <span>Export Data</span>
             </div>
-            <ChevronRight className="w-4 h-4 text-slate-400" />
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </button>
         </Card>
 
