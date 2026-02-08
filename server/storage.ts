@@ -1,38 +1,80 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import {
+  assignments,
+  courses,
+  type Assignment,
+  type InsertAssignment,
+  type Course,
+  type AssignmentWithCourse
+} from "@shared/schema";
+import { eq, desc, asc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getCourses(): Promise<Course[]>;
+  getAssignments(): Promise<AssignmentWithCourse[]>;
+  getAssignment(id: number): Promise<AssignmentWithCourse | undefined>;
+  updateAssignment(id: number, updates: Partial<InsertAssignment>): Promise<Assignment>;
+  createCourse(course: typeof courses.$inferInsert): Promise<Course>;
+  createAssignment(assignment: InsertAssignment): Promise<Assignment>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getCourses(): Promise<Course[]> {
+    return await db.select().from(courses);
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getAssignments(): Promise<AssignmentWithCourse[]> {
+    const results = await db
+      .select({
+        assignment: assignments,
+        course: courses,
+      })
+      .from(assignments)
+      .innerJoin(courses, eq(assignments.courseId, courses.id))
+      .orderBy(asc(assignments.dueDate));
+
+    return results.map(row => ({
+      ...row.assignment,
+      course: row.course,
+    }));
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getAssignment(id: number): Promise<AssignmentWithCourse | undefined> {
+    const [result] = await db
+      .select({
+        assignment: assignments,
+        course: courses,
+      })
+      .from(assignments)
+      .innerJoin(courses, eq(assignments.courseId, courses.id))
+      .where(eq(assignments.id, id));
+
+    if (!result) return undefined;
+
+    return {
+      ...result.assignment,
+      course: result.course,
+    };
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updateAssignment(id: number, updates: Partial<InsertAssignment>): Promise<Assignment> {
+    const [updated] = await db
+      .update(assignments)
+      .set(updates)
+      .where(eq(assignments.id, id))
+      .returning();
+    return updated;
+  }
+
+  async createCourse(course: typeof courses.$inferInsert): Promise<Course> {
+    const [newCourse] = await db.insert(courses).values(course).returning();
+    return newCourse;
+  }
+
+  async createAssignment(assignment: InsertAssignment): Promise<Assignment> {
+    const [newAssignment] = await db.insert(assignments).values(assignment).returning();
+    return newAssignment;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
