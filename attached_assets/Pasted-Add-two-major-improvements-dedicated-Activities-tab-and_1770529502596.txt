@@ -1,0 +1,847 @@
+Add two major improvements: dedicated Activities tab and full calendar view with AI generation.
+
+PART 10: ADD ACTIVITIES MANAGEMENT TAB
+
+1. ADD 6TH TAB TO BOTTOM NAVIGATION:
+- Bottom nav now has 6 tabs: Today, Week, Activities, Schedule, All, Settings
+- Activities tab icon: list or checklist icon
+- This is where users manage ALL their recurring commitments
+
+2. CREATE ACTIVITIES SCREEN:
+
+HEADER:
+- Title: "My Activities"
+- Subtitle: "Manage your classes and recurring commitments"
+- "Add Activity" button (top right, + icon)
+
+SECTION 1 - CLASS SCHEDULE:
+- Expandable section: "Classes" with count badge (e.g., "Classes (5)")
+- Tap to expand/collapse
+- List view of all classes:
+┌─────────────────────────────────┐
+│ CS 159 - Intro to Programming   │
+│ MWF • 9:00-9:50 AM             │
+│ Lawson 1142                     │
+│ [Edit] [Delete]                 │
+└─────────────────────────────────┘
+┌─────────────────────────────────┐
+│ PHYS 172 - Modern Mechanics     │
+│ TTh • 8:00-9:15 AM             │
+│ Physics 114                     │
+│ [Edit] [Delete]                 │
+└─────────────────────────────────┘
+- Each class card shows:
+  * Course code and name
+  * Days of week (abbreviated: MWF, TTh, etc.)
+  * Time range
+  * Location
+  * Edit and Delete buttons
+- Color coded by course (same colors as assignments)
+
+SECTION 2 - RECURRING ACTIVITIES:
+- Expandable section: "Recurring Activities (8)"
+- Grouped by frequency:
+  * "Daily Activities" (Breakfast, Lunch, Dinner, Sleep, etc.)
+  * "Weekly Activities" (Gym, Clubs, Study Groups, etc.)
+  * "Custom Schedule" (Odd patterns like "Every other Tuesday")
+
+Example cards:
+┌─────────────────────────────────┐
+│ 🏋️ Gym - Workout               │
+│ MWF • 6:30-7:30 AM             │
+│ CoRec                           │
+│ Repeats: Weekly                 │
+│ [Edit] [Delete]                 │
+└─────────────────────────────────┘
+┌─────────────────────────────────┐
+│ 🍽️ Dinner                      │
+│ Daily • 6:00-7:00 PM           │
+│ Repeats: Daily                  │
+│ [Edit] [Delete]                 │
+└─────────────────────────────────┘
+┌─────────────────────────────────┐
+│ 💼 Data Mine Meeting            │
+│ TTh • 4:30-6:00 PM             │
+│ Lawson B148                     │
+│ Repeats: Weekly                 │
+│ [Edit] [Delete]                 │
+└─────────────────────────────────┘
+┌─────────────────────────────────┐
+│ 🎯 Club Basketball              │
+│ Wed • 8:00-10:00 PM            │
+│ CoRec Court 3                   │
+│ Repeats: Weekly                 │
+│ [Edit] [Delete]                 │
+└─────────────────────────────────┘
+
+SECTION 3 - ONE-TIME EVENTS:
+- Expandable section: "Upcoming Events (3)"
+- List of non-recurring activities:
+  * Doctor appointment
+  * Meeting with advisor
+  * Friend's birthday dinner
+  * etc.
+- Shows date and time
+- Can mark as complete (then it disappears)
+
+SECTION 4 - SLEEP SCHEDULE:
+- Special card: "Sleep Schedule"
+- Shows: "10:00 PM - 6:00 AM (8 hours)"
+- Quick edit: Tap to adjust bedtime and wake time
+- Visual: Moon icon + Sun icon with time slider
+- This auto-blocks off sleep time in calendar generation
+
+SECTION 5 - QUICK STATS:
+- Bottom info card:
+  * "Total weekly class hours: 15 hours"
+  * "Total weekly activity hours: 12 hours"
+  * "Available study time: 53 hours"
+  * "You're scheduling X hours per week"
+
+3. CREATE "ADD ACTIVITY" MODAL (Enhanced version):
+
+When clicking "Add Activity" button, show comprehensive form:
+
+TAB 1 - QUICK ADD (Default):
+Pre-made templates for common activities:
+- Grid of buttons:
+[📚 Study Session] [🏋️ Gym/Workout] [🍽️ Meal]
+[💼 Work/Job]      [🎯 Club/Org]    [🏃 Sports]
+[😴 Sleep]         [🎮 Free Time]   [➕ Custom]
+- Clicking a template pre-fills form with smart defaults
+- For example, clicking "Gym/Workout":
+  * Name: "Gym"
+  * Duration: 1 hour
+  * Suggested times: Morning (6-8 AM) or Evening (5-7 PM)
+  * Icon: 🏋️
+  * Color: Orange
+
+TAB 2 - DETAILED ADD:
+Full form with all options:
+
+BASIC INFO:
+- Activity name (text input)
+- Icon picker (emoji selector: 📚🏋️🍽️💼🎯🏃😴🎮🎵🎨⚽🏀📝💻etc.)
+- Category (dropdown):
+  * Class
+  * Study/Homework
+  * Work/Job
+  * Exercise/Sports
+  * Meals
+  * Sleep
+  * Social
+  * Personal
+  * Other
+- Color (color picker or preset colors)
+
+SCHEDULE:
+- Start date (date picker)
+- End date (optional - for activities that end, like a semester-long class)
+- Frequency (radio buttons):
+  * One-time event
+  * Daily
+  * Weekly (select days)
+  * Custom pattern
+  
+IF WEEKLY SELECTED:
+- Days of week (multi-select buttons):
+  * [M] [T] [W] [Th] [F] [Sa] [Su]
+  * Can select multiple
+  * Shows as: MWF, TTh, etc.
+
+TIME:
+- Start time (time picker with 15-min increments)
+- Two options (radio):
+  * End time (time picker)
+  * OR Duration (dropdown: 15min, 30min, 45min, 1hr, 1.5hr, 2hr, 3hr, 4hr+)
+- "Flexible timing" checkbox:
+  * If checked, AI can move this activity in schedule generation
+  * If unchecked, it's locked to this exact time
+
+LOCATION:
+- Location (text input, optional)
+- Common locations dropdown for Purdue:
+  * CoRec, WALC, HSSE, MATH, Lawson, PMU, Dining Court, etc.
+
+NOTIFICATIONS:
+- "Remind me" dropdown:
+  * No reminder
+  * 5 minutes before
+  * 15 minutes before
+  * 30 minutes before
+  * 1 hour before
+  * 1 day before
+
+PRIORITY:
+- Priority level (slider or buttons):
+  * Low (can skip if needed)
+  * Medium (important but flexible)
+  * High (never skip, like classes)
+  * Critical (mandatory, like exams)
+- This affects AI scheduling - high priority gets better time slots
+
+ADVANCED:
+- "Buffer time before" (slider: 0-30 min)
+  * Adds padding before activity (travel time, prep time)
+- "Buffer time after" (slider: 0-30 min)
+  * Adds padding after (cool down, transition time)
+- "Conflict handling" (dropdown):
+  * Warn me about conflicts
+  * Auto-resolve conflicts
+  * Allow overlaps
+
+BUTTONS:
+- "Save Activity" (primary button)
+- "Save & Add Another" (to quickly add multiple)
+- "Cancel"
+
+4. EDIT ACTIVITY FUNCTIONALITY:
+- Clicking "Edit" on any activity opens same modal pre-filled
+- Can modify any field
+- "Save Changes" updates all future instances
+- Option: "Apply to future instances only" vs "Apply to all instances"
+- Option: "Delete just this instance" vs "Delete all future instances"
+
+5. SMART FEATURES IN ACTIVITIES:
+
+CONFLICT DETECTION:
+- When adding activity, check for time conflicts
+- If conflict found, show warning:
+⚠️ Conflict detected!
+"Gym" (MWF 6:30-7:30 AM) overlaps with:
+• "CS 159 Lecture" (MWF 9:00-9:50 AM) ❌ False alarm
+• "Breakfast" (Daily 7:00-7:30 AM) ⚠️ 30 min overlap
+Options:
+[Adjust Times] [Save Anyway] [Cancel]
+
+AUTO-SUGGESTIONS:
+- After adding a class, suggest related activities:
+  * "Add study time for CS 159?" → Auto-creates 2hr/week study blocks
+  * "Add office hours?" → Suggests based on typical OH times
+  
+TEMPLATES BY MAJOR:
+- In Activities screen, "Browse Templates" button
+- Shows activity bundles for common majors:
+  * "Computer Science Student" template:
+    - Typical CS class schedule
+    - Recommended study hours
+    - Lab hours
+    - Career fair prep time
+  * "Engineering Student" template
+  * "Pre-Med Student" template
+- One-click import to get started quickly
+
+IMPORT FROM CALENDAR:
+- "Import from Google Calendar" button
+- "Import from .ics file" button
+- Pulls in existing events and converts to activities
+
+PART 11: TRANSFORM SCHEDULE TAB INTO FULL CALENDAR VIEW
+
+6. COMPLETELY REDESIGN SCHEDULE TAB:
+
+Remove the old simple "today only" view. Replace with full calendar interface.
+
+NEW SCHEDULE SCREEN LAYOUT:
+
+HEADER:
+- Month/Year: "February 2026"
+- Navigation: [< Previous] [Today] [Next >]
+- View switcher (tabs):
+  * [Day] [Week] [Month] [Agenda]
+- "Generate Schedule" button (top right, sparkle icon ✨)
+
+VIEW 1 - MONTH CALENDAR (Default):
+Full calendar grid showing entire month:
+    February 2026
+Sun  Mon  Tue  Wed  Thu  Fri  Sat
+1    2    3    4    5    6    7
+📚   📚   📚   📚   📚
+🏋️  🏋️  🏋️  🏋️  🏋️
+3    5    4    6    5     ← number of activities
+8    9    10   11   12   13   14
+📚   📚   📚   📚   📚   📚
+🏋️  🏋️  🏋️  🏋️  🏋️  🏋️
+⚠️        ⚠️        ⚠️        ← warnings (overbooked)
+4    6    5    7    6    3    2
+15   16   17   18   19   20   21
+...
+
+Each day cell shows:
+- Date number (large)
+- Mini icons for activity types (max 3 visible, then "+2 more")
+- Color dots indicating different courses/activities
+- Warning icon if overbooked (more than 12 hours scheduled)
+- Highlighted if it's today
+
+Tapping a day opens day view (see below)
+
+VIEW 2 - WEEK VIEW:
+Horizontal timeline showing 7 days:
+Mon 2/9    Tue 2/10   Wed 2/11   Thu 2/12   Fri 2/13   Sat 2/14   Sun 2/15
+8 AM
+┌────┐  ┌────┐              ┌────┐
+│PHYS│  │PHYS│              │PHYS│
+9 AM │172 │  │172 │              │172 │
+└────┘  └────┘              └────┘
+┌────┐          ┌────┐              ┌────┐
+│ CS │          │ CS │              │ CS │
+10AM │159 │          │159 │              │159 │
+└────┘          └────┘              └────┘
+┌───────┐       ┌───────┐
+11AM │Study  │       │Study  │
+│CS HW  │       │Math   │
+12PM └───────┘       └───────┘
+┌─────────┐     ┌─────────┐         ┌─────────┐
+1 PM │ Lunch   │     │ Lunch   │         │ Lunch   │
+└─────────┘     └─────────┘         └─────────┘
+...
+
+- Color coded blocks
+- Can scroll horizontally to see different weeks
+- Zoom in/out to show more/less detail
+- Blocks are sized proportionally to duration
+- Can drag blocks to different times (if not locked)
+
+VIEW 3 - DAY VIEW:
+Detailed timeline for single day (like old Schedule view but enhanced):
+Thursday, February 13, 2026
+6:00 AM  ┌──────────────────────────┐
+│ 😴 Sleep                 │
+└──────────────────────────┘
+6:30 AM  ┌──────────────────────────┐
+│ 🏋️ Gym - CoRec          │
+7:30 AM  └──────────────────────────┘
+┌──────────────────────────┐
+8:00 AM  │ 📚 PHYS 172 Lecture      │
+│ Physics Building 114      │
+9:15 AM  └──────────────────────────┘
+⏸️ 15 min buffer
+9:30 AM  ┌──────────────────────────┐
+│ 📝 Study: CS Homework 2  │
+│ Est. 1.5 hrs remaining   │
+11:00 AM └──────────────────────────┘
+┌──────────────────────────┐
+11:00 AM │ 📚 CS 159 Lecture        │
+│ Lawson 1142              │
+12:00 PM └──────────────────────────┘
+⏸️ 30 min buffer
+12:30 PM ┌──────────────────────────┐
+│ 🍽️ Lunch                │
+1:30 PM  └──────────────────────────┘
+┌──────────────────────────┐
+1:30 PM  │ 🔬 ENGR 132 Lab          │
+│ Armstrong Hall           │
+3:00 PM  └──────────────────────────┘
+⏸️ 15 min buffer
+3:15 PM  ┌──────────────────────────┐
+│ 📝 Study: Math Exam      │
+│ Priority: High           │
+│ Due: Feb 15              │
+5:15 PM  └──────────────────────────┘
+⏸️ 15 min buffer
+5:30 PM  ┌──────────────────────────┐
+│ 🍽️ Dinner               │
+6:30 PM  └──────────────────────────┘
+┌──────────────────────────┐
+7:00 PM  │ 📝 Work on Lab Report    │
+│ ENGR 132 - Due Feb 17    │
+9:00 PM  └──────────────────────────┘
+┌──────────────────────────┐
+9:00 PM  │ 🎮 Free Time             │
+10:00 PM └──────────────────────────┘
+┌──────────────────────────┐
+10:00 PM │ 😴 Sleep                 │
+│                          │
+6:00 AM  └──────────────────────────┘
+Summary:
+✅ 4 study blocks (7 hours)
+📚 3 classes (5 hours)
+🏋️ 1 workout (1 hour)
+⏰ 13/16 waking hours scheduled
+
+Each block shows:
+- Icon + activity name
+- Location (if applicable)
+- For study blocks: what assignment + time remaining
+- Duration
+- Color coding
+- Tap to see details or edit
+
+VIEW 4 - AGENDA VIEW:
+List format (good for seeing what's coming up):
+TODAY - Thursday, Feb 13
+────────────────────────────
+6:30 AM  🏋️ Gym (1 hr)
+8:00 AM  📚 PHYS 172 Lecture (1.25 hrs)
+9:30 AM  📝 Study: CS Homework 2 (1.5 hrs)
+11:00 AM 📚 CS 159 Lecture (1 hr)
+12:30 PM 🍽️ Lunch (1 hr)
+... (show all)
+TOMORROW - Friday, Feb 14
+────────────────────────────
+8:00 AM  📚 PHYS 172 Lecture (1.25 hrs)
+9:30 AM  📝 Review for PHYS Exam (2 hrs)
+...
+SATURDAY, FEB 15
+────────────────────────────
+9:00 AM  📝 PHYS 172 Exam (2 hrs) ⚠️ HIGH PRIORITY
+11:00 AM 🎮 Free Time (5 hrs)
+...
+NEXT 7 DAYS
+────────────────────────────
+(Shows all upcoming activities in chronological order)
+
+Clean list, easy to scan, good for mobile
+
+7. AI SCHEDULE GENERATION FEATURE:
+
+"GENERATE SCHEDULE" BUTTON:
+When clicked, opens modal:
+┌────────────────────────────────────┐
+│    ✨ AI Schedule Generation       │
+├────────────────────────────────────┤
+│                                    │
+│ Generate your study schedule for:  │
+│                                    │
+│ ○ Today only                       │
+│ ● This week (recommended)          │
+│ ○ Next 2 weeks                     │
+│ ○ Entire month                     │
+│                                    │
+│ Based on:                          │
+│ ☑ 12 upcoming assignments          │
+│ ☑ Your class schedule (5 classes)  │
+│ ☑ Your activities (8 recurring)    │
+│ ☑ Your preferences (morning person) │
+│                                    │
+│ Options:                           │
+│ ☑ Spread exam prep over 3 days    │
+│ ☑ Start assignments early          │
+│ ☑ Include study breaks             │
+│ ☑ Respect sleep schedule           │
+│ ☐ Allow weekend study              │
+│ ☐ Pack schedule (maximize study)   │
+│                                    │
+│ This will:                         │
+│ • Clear existing AI study blocks   │
+│ • Keep your classes & activities   │
+│ • Add optimized study sessions     │
+│                                    │
+│     [Cancel]  [Generate Schedule]  │
+└────────────────────────────────────┘
+
+AFTER CLICKING "GENERATE SCHEDULE":
+
+1. Show loading animation (2-3 seconds):
+✨ Analyzing your assignments...
+📊 Finding optimal study times...
+🎯 Balancing your workload...
+✅ Schedule generated!
+
+2. Show calendar populated with new study blocks
+
+3. Show summary modal:
+┌────────────────────────────────────┐
+│    📊 Your New Schedule            │
+├────────────────────────────────────┤
+│                                    │
+│ Added 18 study blocks:             │
+│ • CS 159 Homework 2: 3 sessions    │
+│ • PHYS 172 Exam prep: 6 sessions   │
+│ • Math Problem Set: 2 sessions     │
+│ • ENGR Lab Report: 4 sessions      │
+│ • Reading assignments: 3 sessions  │
+│                                    │
+│ Total study time: 32 hours         │
+│ Across 7 days                      │
+│                                    │
+│ Peak day: Tuesday (6 hrs)          │
+│ Lightest day: Saturday (2 hrs)     │
+│                                    │
+│ ⚠️ Potential issues:               │
+│ • Thursday is packed (12 hrs)      │
+│   Consider moving some to Friday?  │
+│                                    │
+│    [View Schedule]  [Adjust]       │
+└────────────────────────────────────┘
+
+AI GENERATION ALGORITHM (Enhanced):
+
+INPUT:
+1. All assignments from backend with due dates and estimated effort
+2. All classes from Activities (locked blocks)
+3. All recurring activities from Activities (some locked, some flexible)
+4. Sleep schedule (locked block)
+5. User preferences:
+   - Study time preference (morning/afternoon/evening/night)
+   - Buffer time settings
+   - Break frequency
+   - Spread vs. cram tendency
+6. Current date/time
+7. Generation timeframe (today, week, 2 weeks, month)
+
+PROCESSING:
+
+STEP 1 - Create time grid:
+- Generate hourly grid for timeframe
+- Mark all locked blocks (classes, locked activities, sleep)
+- Mark all flexible activity blocks (can be moved if needed)
+- Identify all free time slots
+
+STEP 2 - Estimate effort for each assignment:
+```typescript
+function estimateEffort(assignment) {
+  const baseEffort = {
+    'homework': 2,      // hours
+    'reading': 1,
+    'quiz_prep': 1.5,
+    'exam_prep': 6,     // spread over multiple days
+    'lab': 2.5,
+    'project': 8,       // spread over multiple days
+    'essay': 4,
+  };
+  
+  // Adjust based on course difficulty (from user ratings or defaults)
+  const courseDifficulty = getCourseRating(assignment.courseId);
+  return baseEffort[assignment.type] * courseDifficulty;
+}
+```
+
+STEP 3 - Prioritize assignments:
+```typescript
+function priorityScore(assignment) {
+  const daysUntilDue = (assignment.dueDate - now) / (24 * 60 * 60 * 1000);
+  const effort = estimateEffort(assignment);
+  
+  // Higher score = more urgent
+  return (effort / daysUntilDue) * assignment.weight;
+}
+```
+
+Sort assignments by priority score descending
+
+STEP 4 - Schedule each assignment:
+
+For each assignment (highest priority first):
+1. Determine when to start:
+   - Exams: Start 3-5 days before
+   - Projects: Start 5-7 days before  
+   - Homework: Start 2-3 days before
+   - Reading: Start 1-2 days before
+   
+2. Determine session count:
+   - Break long assignments (4+ hours) into multiple sessions
+   - Max 2 hours per session (with breaks)
+   - Min 30 minutes per session
+   - Example: 6 hour exam prep = 3 sessions of 2 hours each
+   
+3. Find best time slots:
+   - Filter slots by user's preferred study times
+   - Prefer slots where user is most productive (based on past completion)
+   - Avoid back-to-back study sessions (add breaks)
+   - Spread sessions across different days when possible
+   - Don't schedule after 10 PM unless user is night owl
+   
+4. Place study blocks:
+   - Place in optimal time slots
+   - If no optimal slots available, use secondary preferences
+   - If still can't fit, show warning about overloaded schedule
+   
+5. Add study breaks:
+   - Every 2 hours of continuous study: Add 10-15 min break
+   - After 4 hours total study in a day: Add 30 min longer break
+
+STEP 5 - Balance the schedule:
+- Check daily load for each day
+- If any day exceeds 8 hours of study + classes + activities:
+  * Mark as "overloaded"
+  * Suggest moving flexible activities
+  * Offer to spread work to adjacent days
+- Try to keep weekends lighter (unless user opts in)
+- Ensure at least 1-2 hours of free time each day
+
+STEP 6 - Optimize:
+- Look for inefficiencies:
+  * Study blocks with large gaps between them (consolidate)
+  * Same-course study sessions too close together (space out)
+  * Study right before that class (good) vs. random times (less good)
+- Apply optimizations
+
+OUTPUT:
+- New schedule blocks added to calendar
+- Warnings/suggestions for overloaded days
+- Summary statistics
+
+8. SMART CALENDAR FEATURES:
+
+DRAG & DROP EDITING:
+- In Week or Day view, long-press and drag study blocks to different times
+- Shows ghost preview while dragging
+- Snaps to 15-minute increments
+- When dropped:
+  * Checks for conflicts
+  * Updates buffer times automatically
+  * Shows "Schedule updated" toast
+- Can't drag locked blocks (classes, locked activities)
+
+AUTO-ADJUST:
+- When you move a block, AI suggests:
+You moved "Study CS" from 2 PM to 4 PM.
+This created a 2-hour gap at 2 PM.
+Want to:
+• Fill with another study block?
+• Keep as free time?
+• Move another activity here?
+[Auto-fill] [Keep free] [Cancel]
+
+CONFLICT RESOLUTION:
+- If you drag a block on top of another:
+⚠️ Conflict with "Gym" (3:00-4:00 PM)
+Options:
+
+Swap these two blocks
+Move "Gym" to tomorrow same time
+Delete "Study Math" and keep "Gym"
+Cancel
+
+
+BATCH OPERATIONS:
+- Select multiple study blocks (checkboxes appear)
+- Actions:
+  * "Move all to tomorrow"
+  * "Delete all"
+  * "Mark all complete"
+  * "Reschedule with AI"
+
+COLOR CODING:
+Each activity type has consistent color:
+- Classes: Blue (#3b82f6)
+- Study blocks: Green (#22c55e)
+- Personal activities: Purple (#a855f7)
+- Meals: Orange (#f97316)
+- Sleep: Dark gray (#64748b)
+- Free time: Light gray (#e2e8f0)
+- Exams: Red (#ef4444)
+
+Within study blocks, shade by course:
+- CS study: Light blue
+- PHYS study: Light purple
+- etc.
+
+COMPLETION TRACKING:
+- Each block has a checkbox (bottom right corner)
+- Tap to mark complete
+- Completed blocks:
+  * Get checkmark badge
+  * Opacity reduced to 60%
+  * Moved to bottom of list in Agenda view
+- Progress bar at top of day:
+Today's Progress: ████████░░░░░ 8/12 blocks (67%)
+
+NOTIFICATIONS:
+- Before each activity starts:
+  * "🏋️ Gym starts in 15 minutes"
+  * "📚 Time to study CS! You have 2 hours scheduled."
+- During long study sessions:
+  * "Take a break! You've been studying for 2 hours."
+- End of day:
+  * "Great job! Completed 9/10 scheduled blocks today 🎉"
+  * "Incomplete: Study Math (2 hrs). Reschedule for tomorrow?"
+
+9. CALENDAR INTELLIGENCE:
+
+PATTERN RECOGNITION:
+After 2 weeks of usage, AI learns:
+- When you actually complete study blocks (vs. skip them)
+- Your most productive times
+- How long tasks actually take you
+- Your break preferences
+
+Uses this to improve future schedule generation:
+💡 Insight: You complete 90% of morning study blocks but only 60% of evening ones.
+Scheduling more tasks in the morning going forward.
+
+ADAPTIVE SCHEDULING:
+- If you consistently skip a study block at 7 AM:
+  * "Noticed you rarely study at 7 AM. Move these to 9 AM instead?"
+- If you finish CS homework faster than estimated:
+  * "You finished CS HW in 1 hour (estimated 2 hours). Adjusting future estimates."
+
+WORKLOAD WARNINGS:
+Before generating schedule, check if it's realistic:
+⚠️ Heavy workload ahead!
+You have 45 hours of assignments due in the next 7 days.
+With your class schedule (15 hrs) and activities (10 hrs), you'd need to study 6-7 hours per day.
+Suggestions:
+
+Skip optional activities this week?
+Start some assignments late? (not recommended)
+Request extension on lower-priority assignments?
+
+[Generate Anyway] [Adjust Workload] [Cancel]
+
+EXAM MODE:
+- When exam is detected within 3 days:
+  * "PHYS 172 Exam in 2 days - entering Exam Mode"
+  * Automatically:
+    - Increases study time for that course
+    - Suggests canceling non-essential activities
+    - Blocks off "cram time" day before exam
+    - Adds review sessions across multiple days
+  * Shows exam countdown timer on calendar
+
+WELLNESS CHECKS:
+Monitor for unhealthy patterns:
+😟 Wellness Alert
+You've scheduled 12+ hours per day for the past 3 days with minimal breaks.
+This can lead to burnout.
+Recommendation:
+
+Add 30-minute breaks after each study session
+Schedule "decompression time" each evening
+Consider lighter day on Saturday
+
+[Add Breaks] [I'm fine] [Remind me later]
+
+TECHNICAL IMPLEMENTATION:
+
+DATA MODELS:
+```typescript
+// Activity (class, recurring commitment, one-time event)
+interface Activity {
+  id: string;
+  name: string;
+  type: 'class' | 'study' | 'work' | 'exercise' | 'meal' | 'sleep' | 'social' | 'personal';
+  icon: string; // emoji
+  color: string;
+  
+  // Scheduling
+  recurring: {
+    frequency: 'once' | 'daily' | 'weekly' | 'custom';
+    daysOfWeek?: string[]; // ['Monday', 'Wednesday', 'Friday']
+    startDate: Date;
+    endDate?: Date; // optional, for semester-long classes
+    customPattern?: string; // for complex patterns
+  };
+  
+  timeSlot: {
+    startTime: string; // "09:00"
+    endTime?: string;  // "09:50"
+    duration?: number; // minutes, alternative to endTime
+    flexible: boolean; // can AI move this?
+  };
+  
+  // Metadata
+  location?: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  bufferBefore: number; // minutes
+  bufferAfter: number;  // minutes
+  
+  // Notifications
+  reminders: {
+    enabled: boolean;
+    minutesBefore: number;
+  }[];
+  
+  // Tracking
+  completions: {
+    date: Date;
+    completed: boolean;
+    actualDuration?: number; // for learning
+  }[];
+}
+
+// Generated Schedule Block (instance of activity on specific date)
+interface ScheduleBlock {
+  id: string;
+  activityId: string; // reference to Activity
+  assignmentId?: string; // if it's a study block for assignment
+  
+  date: Date;
+  startTime: Date;
+  endTime: Date;
+  
+  isGenerated: boolean; // true if AI generated, false if user created
+  isLocked: boolean;    // can't be moved by AI regeneration
+  isCompleted: boolean;
+  
+  // For study blocks
+  metadata?: {
+    assignment: string;
+    estimatedTimeRemaining: number;
+    actualTimeSpent: number;
+    difficulty: 'easy' | 'medium' | 'hard';
+  };
+}
+
+// User Preferences
+interface SchedulePreferences {
+  // Time preferences
+  productiveHours: {
+    morning: boolean;    // 6 AM - 12 PM
+    afternoon: boolean;  // 12 PM - 5 PM
+    evening: boolean;    // 5 PM - 10 PM
+    night: boolean;      // 10 PM - 2 AM
+  };
+  
+  // Sleep
+  sleepSchedule: {
+    bedtime: string;  // "22:00"
+    wakeTime: string; // "06:00"
+    hoursNeeded: number; // 8
+  };
+  
+  // Study habits
+  studySession: {
+    maxDuration: number; // minutes, default 120
+    minDuration: number; // minutes, default 30
+    breakFrequency: number; // minutes, default 120 (break every 2 hrs)
+    breakDuration: number; // minutes, default 15
+  };
+  
+  // Scheduling behavior
+  scheduling: {
+    startAssignmentsEarly: boolean; // vs. closer to deadline
+    spreadExamPrep: boolean; // vs. cram
+    allowWeekendStudy: boolean;
+    defaultBufferTime: number; // minutes
+  };
+  
+  // Learned patterns
+  learned: {
+    actualCompletionRate: number; // % of scheduled blocks actually completed
+    averageStudySpeed: number; // multiplier for estimates (1.0 = on pace, 1.5 = faster, 0.7 = slower)
+    bestStudyTimes: string[]; // ["09:00", "14:00"] - times with highest completion rate
+  };
+}
+```
+
+STATE MANAGEMENT:
+- Use React Context for global calendar state
+- LocalStorage for persistence:
+  * Activities list
+  * User preferences
+  * Generated schedule blocks
+  * Completion history
+- Regenerate schedule on:
+  * New assignment added
+  * Activity added/edited/deleted
+  * User clicks "Regenerate"
+  * Date changes (auto-regenerate for new week)
+
+PERFORMANCE:
+- Calendar rendering can be slow with many blocks
+- Optimizations:
+  * Virtualize month/week views (only render visible dates)
+  * Lazy load agenda items
+  * Memoize expensive calculations (schedule generation)
+  * Debounce drag operations
+
+MOBILE RESPONSIVENESS:
+- Month view: Simplify on mobile (smaller cells, fewer details)
+- Week view: Horizontal scroll, swipe between weeks
+- Day view: Natural vertical scroll
+- Drag & drop: Long-press to initiate, with haptic feedback
+
+That's the complete Activities + AI Calendar system! This is truly next-level compared to Shovel and competitors.

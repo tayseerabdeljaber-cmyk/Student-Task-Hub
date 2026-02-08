@@ -1,0 +1,1148 @@
+Complete the student task management app with all final features. This is the production-ready version.
+
+CRITICAL NOTE: Assignment data and Brightspace integration will be imported externally via API from backend team. For now, use mock data but structure the code to easily swap in real API calls.
+
+PART 12: BACKEND INTEGRATION PREPARATION
+
+1. CREATE API SERVICE LAYER:
+
+Set up clean API interface that backend will implement:
+```typescript
+// services/api.ts
+
+interface Assignment {
+  id: string;
+  title: string;
+  courseId: string;
+  courseName: string;
+  courseCode: string; // "CS 159"
+  dueDate: Date;
+  type: 'homework' | 'quiz' | 'exam' | 'lab' | 'project' | 'reading';
+  platform: 'brightspace' | 'gradescope' | 'piazza' | 'pearson' | 'webassign';
+  description?: string;
+  link?: string; // URL to assignment on platform
+  estimatedHours: number;
+  isCompleted: boolean;
+}
+
+interface ApiService {
+  // Assignments
+  fetchAssignments(): Promise<Assignment[]>;
+  markAssignmentComplete(assignmentId: string): Promise<void>;
+  
+  // Courses
+  fetchCourses(): Promise<Course[]>;
+  
+  // Sync
+  syncNow(): Promise<{ success: boolean; lastSync: Date }>;
+  getLastSyncTime(): Promise<Date>;
+}
+
+// Mock implementation for development
+class MockApiService implements ApiService {
+  async fetchAssignments(): Promise<Assignment[]> {
+    // Return your current mock data
+    return mockAssignments;
+  }
+  
+  async markAssignmentComplete(assignmentId: string): Promise<void> {
+    console.log('Would mark complete:', assignmentId);
+  }
+  
+  async fetchCourses(): Promise<Course[]> {
+    return mockCourses;
+  }
+  
+  async syncNow(): Promise<{ success: boolean; lastSync: Date }> {
+    return { success: true, lastSync: new Date() };
+  }
+  
+  async getLastSyncTime(): Promise<Date> {
+    return new Date(Date.now() - 5 * 60 * 1000); // 5 mins ago
+  }
+}
+
+// Real implementation (backend team will fill this in)
+class RealApiService implements ApiService {
+  private baseUrl = 'https://api.yourapp.com'; // TBD
+  
+  async fetchAssignments(): Promise<Assignment[]> {
+    const response = await fetch(`${this.baseUrl}/assignments`, {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    return response.json();
+  }
+  
+  // ... other methods
+}
+
+// Export singleton that can be swapped
+export const api: ApiService = new MockApiService(); 
+// Later: export const api: ApiService = new RealApiService();
+```
+
+Use this API service throughout the app instead of hardcoded data.
+
+2. ADD SYNC INDICATOR:
+
+Top of every screen, show sync status:
+┌─────────────────────────────────┐
+│ ☁️ Synced 5 minutes ago         │  ← When successful
+│ [Tap to sync now]               │
+└─────────────────────────────────┘
+┌─────────────────────────────────┐
+│ 🔄 Syncing...                   │  ← While syncing
+└─────────────────────────────────┘
+┌─────────────────────────────────┐
+│ ⚠️ Last sync failed             │  ← When error
+│ [Retry]                         │
+└─────────────────────────────────┘
+
+Features:
+- Shows time since last successful sync
+- "Pull to refresh" gesture triggers sync
+- Auto-syncs every 30 minutes when app is open
+- Manual sync button
+- Shows loading spinner during sync
+- Error handling with retry
+
+3. ADD SETTINGS FOR SYNC:
+
+In Settings screen, "Data & Sync" section:
+- "Auto-sync" toggle (on/off)
+- "Sync frequency" dropdown:
+  * Every 15 minutes
+  * Every 30 minutes (default)
+  * Every hour
+  * Manual only
+- "Last synced" timestamp
+- "Sync now" button
+- "Clear cache" button (clears local data, forces full re-sync)
+
+PART 13: PUSH NOTIFICATIONS SYSTEM
+
+4. IMPLEMENT NOTIFICATION INFRASTRUCTURE:
+
+Create notification manager:
+```typescript
+// services/notifications.ts
+
+interface Notification {
+  id: string;
+  type: 'assignment_due' | 'study_time' | 'break' | 'streak' | 'exam_soon';
+  title: string;
+  body: string;
+  scheduledFor: Date;
+  data?: any; // extra data for handling tap
+}
+
+class NotificationService {
+  // Request permission (show on first launch)
+  async requestPermission(): Promise<boolean> {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    }
+    return false;
+  }
+  
+  // Schedule a notification
+  async schedule(notification: Notification): Promise<void> {
+    // For web: Use Notification API
+    // For mobile: Use react-native-push-notification
+    console.log('Scheduled notification:', notification);
+  }
+  
+  // Cancel notification
+  async cancel(notificationId: string): Promise<void> {
+    console.log('Cancelled notification:', notificationId);
+  }
+  
+  // Cancel all
+  async cancelAll(): Promise<void> {
+    console.log('Cancelled all notifications');
+  }
+}
+
+export const notifications = new NotificationService();
+```
+
+5. AUTO-GENERATE NOTIFICATIONS:
+
+When assignments are loaded or schedule is generated, automatically create notifications:
+```typescript
+// Generate notifications for assignments
+function generateAssignmentNotifications(assignments: Assignment[]) {
+  assignments.forEach(assignment => {
+    const dueDate = new Date(assignment.dueDate);
+    
+    // 1 day before
+    notifications.schedule({
+      id: `${assignment.id}_1day`,
+      type: 'assignment_due',
+      title: `${assignment.courseName} due tomorrow`,
+      body: `${assignment.title} is due tomorrow at ${formatTime(dueDate)}`,
+      scheduledFor: new Date(dueDate.getTime() - 24 * 60 * 60 * 1000)
+    });
+    
+    // 1 hour before
+    notifications.schedule({
+      id: `${assignment.id}_1hour`,
+      type: 'assignment_due',
+      title: `${assignment.title} due in 1 hour!`,
+      body: `Don't forget to submit on ${assignment.platform}`,
+      scheduledFor: new Date(dueDate.getTime() - 60 * 60 * 1000)
+    });
+  });
+}
+
+// Generate notifications for study blocks
+function generateStudyNotifications(scheduleBlocks: ScheduleBlock[]) {
+  scheduleBlocks
+    .filter(block => block.type === 'study' && !block.isCompleted)
+    .forEach(block => {
+      notifications.schedule({
+        id: `study_${block.id}`,
+        type: 'study_time',
+        title: 'Time to study!',
+        body: `Start: ${block.title} (${formatDuration(block.duration)})`,
+        scheduledFor: new Date(block.startTime.getTime() - 5 * 60 * 1000) // 5 min before
+      });
+    });
+}
+```
+
+6. NOTIFICATION SETTINGS:
+
+In Settings screen, "Notifications" section:
+┌─────────────────────────────────┐
+│ 🔔 Notifications                │
+├─────────────────────────────────┤
+│                                 │
+│ Enable Notifications            │
+│ ────────────── ☑️              │
+│                                 │
+│ Assignment Reminders            │
+│ ────────────── ☑️              │
+│   Remind me:                    │
+│   ☑ 1 day before                │
+│   ☑ 1 hour before               │
+│   ☐ 15 minutes before           │
+│                                 │
+│ Study Block Reminders           │
+│ ────────────── ☑️              │
+│   ☑ 5 minutes before start      │
+│   ☑ At start time               │
+│                                 │
+│ Break Reminders                 │
+│ ────────────── ☑️              │
+│   ☑ After 2 hours of study      │
+│                                 │
+│ Streak Reminders                │
+│ ────────────── ☑️              │
+│   ☑ Daily streak check-in       │
+│   Time: 8:00 PM                 │
+│                                 │
+│ Quiet Hours                     │
+│ ────────────── ☑️              │
+│   No notifications during:      │
+│   10:00 PM - 7:00 AM           │
+│                                 │
+└─────────────────────────────────┘
+
+Each toggle controls whether those notifications are sent.
+
+7. NOTIFICATION CENTER (In-App):
+
+Add bell icon in top right of Today view.
+Badge shows unread count.
+
+Clicking opens notification center:
+┌─────────────────────────────────┐
+│ Notifications                    │
+│ [Mark all read]                 │
+├─────────────────────────────────┤
+│                                 │
+│ TODAY                           │
+│                                 │
+│ 🔔 Time to study!               │
+│ Start: CS Homework 2 (2 hrs)    │
+│ 5 minutes ago                   │
+│ ─────────────────────────       │
+│                                 │
+│ 📚 Assignment due soon          │
+│ PHYS Quiz due in 1 hour         │
+│ 45 minutes ago                  │
+│ ─────────────────────────       │
+│                                 │
+│ YESTERDAY                       │
+│                                 │
+│ 🎉 Great job!                   │
+│ Completed 8/10 blocks           │
+│ Yesterday 9:30 PM               │
+│ ─────────────────────────       │
+│                                 │
+│ 🔥 5 day streak!                │
+│ Keep up the great work          │
+│ Yesterday 8:00 PM               │
+│ ─────────────────────────       │
+│                                 │
+└─────────────────────────────────┘
+
+Features:
+- Chronological list (newest first)
+- Group by Today/Yesterday/This Week/Older
+- Swipe to dismiss
+- Tap notification to go to relevant screen
+- "Mark all read" clears badge
+
+PART 14: SMART RECOMMENDATIONS ENGINE
+
+8. ADD AI RECOMMENDATIONS:
+
+Create intelligent suggestion system throughout the app:
+
+A) ON TODAY VIEW:
+
+Add "💡 Recommendations" card below tasks:
+┌─────────────────────────────────┐
+│ 💡 Recommendations              │
+├─────────────────────────────────┤
+│                                 │
+│ Start PHYS project early        │
+│ Students usually need 10+ hours │
+│ for this assignment             │
+│ [Schedule now]                  │
+│ ─────────────────────────       │
+│                                 │
+│ Light day ahead tomorrow        │
+│ Consider moving some study to   │
+│ tomorrow to balance workload    │
+│ [Reschedule]                    │
+│ ─────────────────────────       │
+│                                 │
+│ Study group for CS 159?         │
+│ 12 students in your class are   │
+│ using this app                  │
+│ [Find study partners]           │
+│ ─────────────────────────       │
+│                                 │
+└─────────────────────────────────┘
+
+B) RECOMMENDATION TYPES:
+```typescript
+interface Recommendation {
+  id: string;
+  type: 'start_early' | 'balance_workload' | 'exam_prep' | 'difficult_assignment' | 'office_hours' | 'break_needed';
+  priority: 'low' | 'medium' | 'high';
+  title: string;
+  description: string;
+  action?: {
+    label: string;
+    handler: () => void;
+  };
+  dismissible: boolean;
+}
+
+// Generate recommendations based on data
+function generateRecommendations(
+  assignments: Assignment[],
+  schedule: ScheduleBlock[],
+  userActivity: UserActivity
+): Recommendation[] {
+  const recommendations: Recommendation[] = [];
+  
+  // 1. Start early on big assignments
+  assignments
+    .filter(a => a.estimatedHours >= 4 && daysUntil(a.dueDate) >= 5)
+    .forEach(assignment => {
+      recommendations.push({
+        type: 'start_early',
+        priority: 'high',
+        title: `Start ${assignment.title} early`,
+        description: `This assignment typically takes ${assignment.estimatedHours}+ hours. Start now to avoid last-minute stress.`,
+        action: {
+          label: 'Schedule now',
+          handler: () => scheduleAssignment(assignment.id)
+        }
+      });
+    });
+  
+  // 2. Exam preparation
+  assignments
+    .filter(a => a.type === 'exam' && daysUntil(a.dueDate) <= 5)
+    .forEach(exam => {
+      const studyHoursScheduled = schedule.filter(
+        b => b.assignmentId === exam.id
+      ).reduce((sum, b) => sum + b.duration, 0);
+      
+      if (studyHoursScheduled < 4) {
+        recommendations.push({
+          type: 'exam_prep',
+          priority: 'high',
+          title: `${exam.courseName} exam in ${daysUntil(exam.dueDate)} days`,
+          description: `You've only scheduled ${studyHoursScheduled} hours. Consider adding 2-3 more study sessions.`,
+          action: {
+            label: 'Add study time',
+            handler: () => scheduleExamPrep(exam.id)
+          }
+        });
+      }
+    });
+  
+  // 3. Difficult assignments
+  assignments
+    .filter(a => a.difficulty === 'hard' && !a.isCompleted)
+    .forEach(assignment => {
+      recommendations.push({
+        type: 'difficult_assignment',
+        priority: 'medium',
+        title: `${assignment.title} is challenging`,
+        description: `Students typically struggle with this. Consider attending office hours or finding a study group.`,
+        action: {
+          label: 'View resources',
+          handler: () => showResources(assignment.courseId)
+        }
+      });
+    });
+  
+  // 4. Balance workload
+  const weekSchedule = getThisWeekSchedule(schedule);
+  const overloadedDays = weekSchedule.filter(day => day.totalHours > 10);
+  const lightDays = weekSchedule.filter(day => day.totalHours < 4);
+  
+  if (overloadedDays.length > 0 && lightDays.length > 0) {
+    recommendations.push({
+      type: 'balance_workload',
+      priority: 'medium',
+      title: 'Unbalanced schedule this week',
+      description: `${overloadedDays[0].name} has ${overloadedDays[0].totalHours} hours scheduled. Move some to ${lightDays[0].name}?`,
+      action: {
+        label: 'Rebalance',
+        handler: () => rebalanceWeek()
+      }
+    });
+  }
+  
+  // 5. Break needed
+  const recentStudyHours = userActivity.last7Days.studyHours;
+  if (recentStudyHours > 40) {
+    recommendations.push({
+      type: 'break_needed',
+      priority: 'medium',
+      title: 'You\'ve been working hard',
+      description: `You've studied ${recentStudyHours} hours this week. Consider taking a break to avoid burnout.`,
+      action: {
+        label: 'Schedule free time',
+        handler: () => scheduleFreeTime()
+      }
+    });
+  }
+  
+  // 6. Office hours
+  const strugglingCourses = userActivity.courses.filter(
+    c => c.averageGrade < 75 || c.missedAssignments > 2
+  );
+  strugglingCourses.forEach(course => {
+    recommendations.push({
+      type: 'office_hours',
+      priority: 'high',
+      title: `Struggling in ${course.name}?`,
+      description: `You've missed ${course.missedAssignments} assignments. Office hours: ${course.officeHours}`,
+      action: {
+        label: 'Add to calendar',
+        handler: () => addOfficeHours(course.id)
+      }
+    });
+  });
+  
+  return recommendations.sort((a, b) => {
+    const priorityOrder = { high: 3, medium: 2, low: 1 };
+    return priorityOrder[b.priority] - priorityOrder[a.priority];
+  });
+}
+```
+
+C) SMART PATTERNS:
+
+Learn from user behavior:
+```typescript
+// Track user patterns
+interface UserActivity {
+  // Completion patterns
+  completionRate: {
+    overall: number; // 0-1
+    byTimeOfDay: { [hour: string]: number }; // "09": 0.85
+    byCourse: { [courseId: string]: number };
+  };
+  
+  // Study habits
+  last7Days: {
+    studyHours: number;
+    completedBlocks: number;
+    missedBlocks: number;
+  };
+  
+  // Courses
+  courses: {
+    id: string;
+    name: string;
+    averageGrade: number;
+    missedAssignments: number;
+    officeHours: string;
+  }[];
+}
+
+// Use patterns to improve recommendations
+function personalize Recommendations(
+  baseRecommendations: Recommendation[],
+  userActivity: UserActivity
+): Recommendation[] {
+  // Filter out recommendations for times user rarely completes
+  return baseRecommendations.map(rec => {
+    if (rec.type === 'start_early') {
+      // Suggest user's most productive time
+      const bestHour = Object.entries(userActivity.completionRate.byTimeOfDay)
+        .sort((a, b) => b[1] - a[1])[0][0];
+      
+      rec.description += ` Your most productive time is ${formatHour(bestHour)}.`;
+    }
+    return rec;
+  });
+}
+```
+
+D) SHOW RECOMMENDATIONS CONTEXTUALLY:
+
+- **Today View:** Show top 3 recommendations
+- **Schedule View:** When generating schedule, show recommendations before generation
+- **Settings:** "Recommendations" toggle to turn on/off
+- **All Tasks View:** Show recommendation when filtering to a specific tough course
+
+PART 15: PREMIUM/MONETIZATION FEATURES
+
+9. IMPLEMENT FREEMIUM MODEL:
+
+A) CREATE PAYWALL SYSTEM:
+```typescript
+enum SubscriptionTier {
+  FREE = 'free',
+  PREMIUM = 'premium'
+}
+
+interface User {
+  id: string;
+  email: string;
+  subscriptionTier: SubscriptionTier;
+  subscriptionExpires?: Date;
+}
+
+// Feature gating
+function hasAccess(feature: string, user: User): boolean {
+  const premiumFeatures = [
+    'ai_schedule_generation',
+    'multiple_platform_sync', // Gradescope, Piazza, etc. (only Brightspace is free)
+    'unlimited_activities',
+    'advanced_recommendations',
+    'study_analytics',
+    'custom_themes',
+  ];
+  
+  if (!premiumFeatures.includes(feature)) {
+    return true; // Free feature
+  }
+  
+  return user.subscriptionTier === SubscriptionTier.PREMIUM;
+}
+```
+
+B) ADD UPGRADE PROMPTS:
+
+When user tries premium feature, show modal:
+┌─────────────────────────────────┐
+│     ✨ Premium Feature          │
+├─────────────────────────────────┤
+│                                 │
+│  AI Schedule Generation is a    │
+│  premium feature                │
+│                                 │
+│  Premium includes:              │
+│  ✓ AI-powered schedule planning │
+│  ✓ Gradescope & Piazza sync     │
+│  ✓ Unlimited activities         │
+│  ✓ Advanced insights            │
+│  ✓ Custom themes                │
+│  ✓ Priority support             │
+│                                 │
+│  ─────────────────────────      │
+│                                 │
+│  💳 $4.99/month                 │
+│  or $39.99/year (save 33%)      │
+│                                 │
+│  🎓 Student discount: First     │
+│     month free with .edu email  │
+│                                 │
+│  [Start Free Trial]             │
+│  [Maybe Later]                  │
+│                                 │
+└─────────────────────────────────┘
+
+C) PREMIUM BADGE:
+
+Add subtle "⭐ Premium" badge on premium features:
+- Next to "Generate Schedule" button
+- On Analytics tab
+- On advanced settings
+
+D) FREE TIER LIMITATIONS:
+
+Enforce limits for free users:
+```typescript
+// Free tier can only add 3 recurring activities
+function canAddActivity(user: User, currentActivities: Activity[]): boolean {
+  if (user.subscriptionTier === SubscriptionTier.PREMIUM) {
+    return true;
+  }
+  
+  const recurringCount = currentActivities.filter(
+    a => a.recurring.frequency !== 'once'
+  ).length;
+  
+  return recurringCount < 3; // Free tier limit
+}
+
+// Show upgrade prompt if limit reached
+if (!canAddActivity(user, activities)) {
+  showUpgradeModal({
+    title: 'Activity Limit Reached',
+    message: 'Free users can add up to 3 recurring activities. Upgrade to Premium for unlimited activities.',
+    feature: 'unlimited_activities'
+  });
+}
+```
+
+E) SUBSCRIPTION SETTINGS:
+
+In Settings screen, "Subscription" section:
+
+FOR FREE USERS:
+┌─────────────────────────────────┐
+│ 💎 Subscription                 │
+├─────────────────────────────────┤
+│                                 │
+│ Current Plan: Free              │
+│                                 │
+│ You're using 2/3 activity slots │
+│ Syncing from 1 platform         │
+│                                 │
+│ [Upgrade to Premium]            │
+│                                 │
+└─────────────────────────────────┘
+
+FOR PREMIUM USERS:
+┌─────────────────────────────────┐
+│ 💎 Subscription                 │
+├─────────────────────────────────┤
+│                                 │
+│ Current Plan: Premium ⭐        │
+│ Renews: March 8, 2026           │
+│ $4.99/month                     │
+│                                 │
+│ [Manage Subscription]           │
+│ [Cancel Subscription]           │
+│                                 │
+└─────────────────────────────────┘
+
+F) TRIAL PERIOD:
+
+New users get 7-day premium trial:
+```typescript
+function shouldShowTrialBanner(user: User): boolean {
+  if (user.subscriptionTier === SubscriptionTier.PREMIUM) {
+    return false;
+  }
+  
+  const accountAge = Date.now() - user.createdAt.getTime();
+  const daysSinceCreation = accountAge / (24 * 60 * 60 * 1000);
+  
+  // Show trial banner for first 3 days
+  return daysSinceCreation <= 3;
+}
+```
+
+Banner at top of app:
+┌─────────────────────────────────┐
+│ 🎉 Start your 7-day free trial  │
+│ Access all premium features     │
+│ [Start Trial] [Dismiss]         │
+└─────────────────────────────────┘
+
+PART 16: ANALYTICS & INSIGHTS (Premium Feature)
+
+10. ADD ANALYTICS TAB (Premium):
+
+Add 7th tab to bottom nav (only visible for premium users):
+- Tab name: "Insights"
+- Icon: Chart/graph icon
+
+A) ANALYTICS DASHBOARD:
+┌─────────────────────────────────┐
+│ 📊 Your Study Insights          │
+├─────────────────────────────────┤
+│                                 │
+│ THIS WEEK                       │
+│                                 │
+│ ┌─────────────────────────┐    │
+│ │ 🔥 Study Streak: 12 days │    │
+│ │ Don't break it!          │    │
+│ └─────────────────────────┘    │
+│                                 │
+│ Study Time This Week            │
+│ ██████████░░░░░ 28/40 hours    │
+│ 70% of goal                     │
+│                                 │
+│ Completion Rate                 │
+│ ████████████░░ 85%             │
+│ ↑ 5% from last week            │
+│                                 │
+│ PRODUCTIVITY TRENDS             │
+│                                 │
+│ Most Productive Time            │
+│ 🌅 Morning (9-11 AM)            │
+│ 92% completion rate             │
+│                                 │
+│ Best Study Day                  │
+│ 📅 Tuesday                      │
+│ Avg 6 hours, 90% completion     │
+│                                 │
+│ COURSE BREAKDOWN                │
+│                                 │
+│ ┌────────────┬──────┬────┐     │
+│ │ CS 159     │ 8hrs │ 90%│     │
+│ │ PHYS 172   │ 6hrs │ 85%│     │
+│ │ ENGR 132   │ 7hrs │ 75%│ ⚠️ │
+│ │ MATH 166   │ 5hrs │ 95%│     │
+│ │ CHM 115    │ 2hrs │ 80%│     │
+│ └────────────┴──────┴────┘     │
+│                                 │
+│ 💡 Insight: You're falling      │
+│ behind in ENGR 132. Consider    │
+│ adding 2 more study hours.      │
+│                                 │
+│ HABITS                          │
+│                                 │
+│ Average study session: 1.8 hrs  │
+│ Preferred break length: 15 min  │
+│ Study consistency: High ⭐      │
+│                                 │
+│ [Export Data] [Share Stats]    │
+│                                 │
+└─────────────────────────────────┘
+
+B) VISUALIZATIONS:
+
+Add charts/graphs:
+
+1. **Study Time Chart** (bar chart):
+   - X-axis: Days of week
+   - Y-axis: Hours studied
+   - Shows last 7 days
+
+2. **Completion Rate Over Time** (line chart):
+   - X-axis: Weeks
+   - Y-axis: Completion %
+   - Shows trend over semester
+
+3. **Course Distribution** (pie chart):
+   - Shows time allocation across courses
+
+4. **Heatmap** (calendar heatmap):
+   - Shows study activity over last 30 days
+   - Green = heavy study day, light = minimal
+
+Use a charting library like Recharts or Chart.js
+
+C) PERSONALIZED INSIGHTS:
+
+Generate insights based on data:
+```typescript
+function generateInsights(analytics: AnalyticsData): string[] {
+  const insights = [];
+  
+  // Low completion course
+  const strugglingCourse = analytics.courses
+    .filter(c => c.completionRate < 80)
+    .sort((a, b) => a.completionRate - b.completionRate)[0];
+  
+  if (strugglingCourse) {
+    insights.push(
+      `You're falling behind in ${strugglingCourse.name} (${strugglingCourse.completionRate}% completion). Consider adding ${Math.ceil((1 - strugglingCourse.completionRate) * 3)} more study hours this week.`
+    );
+  }
+  
+  // Productivity pattern
+  const bestTime = analytics.productivityByHour
+    .sort((a, b) => b.completionRate - a.completionRate)[0];
+  
+  insights.push(
+    `You're most productive at ${bestTime.hour}:00 (${bestTime.completionRate}% completion rate). Try scheduling difficult tasks during this time.`
+    );
+  
+  // Study consistency
+  if (analytics.currentStreak >= 7) {
+    insights.push(
+      `🔥 Amazing! You've maintained a ${analytics.currentStreak}-day study streak. Keep it up!`
+    );
+  }
+  
+  // Workload warning
+  if (analytics.thisWeek.studyHours > 35) {
+    insights.push(
+      `⚠️ You've studied ${analytics.thisWeek.studyHours} hours this week. Remember to take breaks to avoid burnout.`
+    );
+  }
+  
+  return insights;
+}
+```
+
+PART 17: POLISH & FINAL TOUCHES
+
+11. ONBOARDING FLOW (First Launch):
+
+Create beautiful welcome flow:
+
+SCREEN 1 - Welcome:
+┌─────────────────────────────────┐
+│                                 │
+│      [App Logo/Icon]            │
+│                                 │
+│   Welcome to StudyFlow          │
+│                                 │
+│  Never miss an assignment.      │
+│  Reduce stress. Succeed.        │
+│                                 │
+│  Used by 2,500+ students at     │
+│  Purdue University              │
+│                                 │
+│         [Get Started]           │
+│                                 │
+└─────────────────────────────────┘
+
+SCREEN 2 - Features:
+Swipeable cards:
+Card 1:
+┌─────────────────────────────────┐
+│     📚                          │
+│  Auto-Sync Assignments          │
+│                                 │
+│  Connect Brightspace and we'll  │
+│  automatically pull all your    │
+│  assignments and due dates      │
+│                                 │
+│          [Next →]               │
+│          ○ ● ○ ○                │
+└─────────────────────────────────┘
+Card 2:
+┌─────────────────────────────────┐
+│     🤖                          │
+│  AI Study Planning              │
+│                                 │
+│  Our AI generates personalized  │
+│  study schedules based on your  │
+│  workload and preferences       │
+│                                 │
+│          [Next →]               │
+│          ○ ○ ● ○                │
+└─────────────────────────────────┘
+Card 3:
+┌─────────────────────────────────┐
+│     ✅                          │
+│  Peace of Mind                  │
+│                                 │
+│  Always know what's due and     │
+│  when to work on it. No more    │
+│  "Did I forget something?"      │
+│                                 │
+│          [Next →]               │
+│          ○ ○ ○ ●                │
+└─────────────────────────────────┘
+
+SCREEN 3 - Connect Brightspace:
+┌─────────────────────────────────┐
+│  Connect Your Brightspace       │
+│                                 │
+│  [Brightspace Logo]             │
+│                                 │
+│  We'll import your courses and  │
+│  assignments automatically      │
+│                                 │
+│  🔒 Your data is encrypted and  │
+│  never shared                   │
+│                                 │
+│  [Connect Brightspace]          │
+│  [Skip for now]                 │
+│                                 │
+└─────────────────────────────────┘
+
+SCREEN 4 - Add Classes (if skipped Brightspace):
+┌─────────────────────────────────┐
+│  Add Your Classes               │
+│                                 │
+│  [+ Add Class]                  │
+│                                 │
+│  CS 159 - MWF 9:00-9:50 AM     │
+│  PHYS 172 - TTh 8:00-9:15 AM   │
+│                                 │
+│  [Continue]                     │
+│  [Skip]                         │
+│                                 │
+└─────────────────────────────────┘
+
+SCREEN 5 - Preferences:
+┌─────────────────────────────────┐
+│  Set Your Preferences           │
+│                                 │
+│  When do you prefer to study?   │
+│  ● Morning person               │
+│  ○ Night owl                    │
+│  ○ Flexible                     │
+│                                 │
+│  Sleep schedule                 │
+│  Bedtime: 10:00 PM              │
+│  Wake up: 6:00 AM               │
+│                                 │
+│  Enable notifications?          │
+│  ☑ Yes, keep me on track        │
+│                                 │
+│  [Finish Setup]                 │
+│                                 │
+└─────────────────────────────────┘
+
+SCREEN 6 - Trial Offer:
+┌─────────────────────────────────┐
+│  🎉 Special Offer               │
+│                                 │
+│  Start your 7-day free trial    │
+│  of Premium                     │
+│                                 │
+│  ✓ AI schedule generation       │
+│  ✓ Multi-platform sync          │
+│  ✓ Advanced insights            │
+│  ✓ Unlimited everything         │
+│                                 │
+│  Cancel anytime. No credit      │
+│  card required.                 │
+│                                 │
+│  [Start Free Trial]             │
+│  [Continue with Free]           │
+│                                 │
+└─────────────────────────────────┘
+
+12. EMPTY STATES:
+
+Beautiful empty states for each screen:
+
+A) Today View (no tasks):
+┌─────────────────────────────────┐
+│                                 │
+│         🎉                      │
+│                                 │
+│   Nothing due today!            │
+│                                 │
+│   Enjoy your free time or get   │
+│   ahead on future assignments   │
+│                                 │
+│   [View upcoming]               │
+│                                 │
+└─────────────────────────────────┘
+
+B) Activities (no activities):
+┌─────────────────────────────────┐
+│                                 │
+│         📅                      │
+│                                 │
+│   No activities yet             │
+│                                 │
+│   Add your classes and recurring│
+│   activities to get started     │
+│                                 │
+│   [Add Activity]                │
+│                                 │
+└─────────────────────────────────┘
+
+C) Schedule (no schedule generated):
+┌─────────────────────────────────┐
+│                                 │
+│         ✨                      │
+│                                 │
+│   Generate your first schedule  │
+│                                 │
+│   Let AI plan your study time   │
+│   based on your assignments     │
+│                                 │
+│   [Generate Schedule] ⭐ Premium│
+│                                 │
+└─────────────────────────────────┘
+
+13. ERROR STATES:
+
+Handle errors gracefully:
+
+A) Sync Failed:
+┌─────────────────────────────────┐
+│         ⚠️                      │
+│                                 │
+│   Sync Failed                   │
+│                                 │
+│   Couldn't connect to           │
+│   Brightspace. Check your       │
+│   internet connection.          │
+│                                 │
+│   [Retry]  [View Offline Data]  │
+│                                 │
+└─────────────────────────────────┘
+
+B) No Internet:
+┌─────────────────────────────────┐
+│         📡                      │
+│                                 │
+│   No Internet Connection        │
+│                                 │
+│   Showing cached data from last │
+│   sync (5 hours ago)            │
+│                                 │
+│   Some features unavailable     │
+│                                 │
+└─────────────────────────────────┘
+
+14. LOADING STATES:
+
+Show proper loading indicators:
+
+- Initial app load: Splash screen with logo
+- Fetching assignments: Skeleton screens (shimmer effect)
+- Generating schedule: Progress bar with messages
+- Syncing: Spinner in top bar
+
+15. ANIMATIONS:
+
+Add smooth transitions:
+- Screen transitions: Slide or fade
+- Task completion: Checkmark animation
+- Schedule generation: Progress animation
+- Adding activity: Slide up modal
+- Bottom nav: Icon bounce on tap
+
+Use CSS transitions or Framer Motion for React
+
+16. DARK MODE (Basic):
+
+Settings toggle for dark mode:
+- Switch primary colors:
+  * Background: #1a1a1a
+  * Cards: #2d2d2d
+  * Text: #ffffff
+- Keep accent colors same (blue, green, etc.)
+- Save preference to localStorage
+
+PART 18: FINAL CODE STRUCTURE
+
+17. ORGANIZE CODE PROPERLY:
+src/
+├── components/
+│   ├── common/
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── Modal.tsx
+│   │   └── EmptyState.tsx
+│   ├── navigation/
+│   │   └── BottomNav.tsx
+│   ├── tasks/
+│   │   ├── TaskCard.tsx
+│   │   └── TaskList.tsx
+│   ├── schedule/
+│   │   ├── CalendarGrid.tsx
+│   │   ├── ScheduleBlock.tsx
+│   │   └── WeekStrip.tsx
+│   └── activities/
+│       ├── ActivityCard.tsx
+│       └── ActivityForm.tsx
+├── screens/
+│   ├── TodayView.tsx
+│   ├── WeekView.tsx
+│   ├── ActivitiesView.tsx
+│   ├── ScheduleView.tsx
+│   ├── AllTasksView.tsx
+│   ├── SettingsView.tsx
+│   ├── AnalyticsView.tsx (premium)
+│   └── Onboarding.tsx
+├── services/
+│   ├── api.ts
+│   ├── notifications.ts
+│   ├── storage.ts
+│   └── analytics.ts
+├── hooks/
+│   ├── useAssignments.ts
+│   ├── useSchedule.ts
+│   ├── useActivities.ts
+│   └── useSubscription.ts
+├── utils/
+│   ├── dateUtils.ts
+│   ├── scheduleGenerator.ts
+│   ├── recommendationsEngine.ts
+│   └── constants.ts
+├── types/
+│   ├── assignment.ts
+│   ├── activity.ts
+│   ├── schedule.ts
+│   └── user.ts
+└── App.tsx
+
+18. MAKE IT PRODUCTION-READY:
+
+- Add error boundaries (catch crashes)
+- Add logging (for debugging)
+- Add performance monitoring
+- Optimize bundle size
+- Add accessibility (ARIA labels)
+- Test on multiple screen sizes
+- Handle edge cases (leap years, timezone changes, etc.)
+
+FINAL CHECKLIST:
+
+✅ All 7 tabs working (Today, Week, Activities, Schedule, All, Settings, Analytics)
+✅ Mock API with clean interface for backend integration
+✅ Sync indicator with manual/auto sync
+✅ Push notification system
+✅ Smart recommendations engine
+✅ Premium/free tier with feature gating
+✅ Beautiful onboarding flow
+✅ Empty states for all screens
+✅ Error handling
+✅ Loading states
+✅ Dark mode
+✅ Smooth animations
+✅ Mobile-optimized
+✅ Clean code structure
+✅ Ready for backend API integration
+
+BUILD THIS INCREMENTALLY:
+1. Core screens (Today, Week, Activities, Schedule, All, Settings)
+2. API service layer (mock data but proper structure)
+3. Notifications UI
+4. Recommendations
+5. Premium features
+6. Analytics
+7. Onboarding
+8. Polish (animations, empty states, errors)
+
+This is now a complete, production-ready MVP that can:
+- Import assignments from external API (your co-founder's work)
+- Generate AI schedules
+- Manage activities
+- Send notifications
+- Give smart recommendations
+- Monetize with premium tier
+
+Ship this and you'll have something truly competitive!

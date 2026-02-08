@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertAssignmentSchema, insertCourseSchema, assignments, courses } from './schema';
+import { insertAssignmentSchema, insertCourseSchema, insertActivitySchema, insertScheduleBlockSchema, assignments, courses, activities, scheduleBlocks } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -65,6 +65,63 @@ export const api = {
         204: z.void(),
         404: errorSchemas.notFound,
       },
+    },
+  },
+  activities: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/activities' as const,
+    },
+    get: {
+      method: 'GET' as const,
+      path: '/api/activities/:id' as const,
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/activities' as const,
+      input: insertActivitySchema,
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/activities/:id' as const,
+      input: insertActivitySchema.partial(),
+    },
+    remove: {
+      method: 'DELETE' as const,
+      path: '/api/activities/:id' as const,
+    },
+  },
+  scheduleBlocks: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/schedule-blocks' as const,
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/schedule-blocks' as const,
+      input: insertScheduleBlockSchema,
+    },
+    bulkCreate: {
+      method: 'POST' as const,
+      path: '/api/schedule-blocks/bulk' as const,
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/schedule-blocks/:id' as const,
+      input: insertScheduleBlockSchema.partial(),
+    },
+    toggleComplete: {
+      method: 'PATCH' as const,
+      path: '/api/schedule-blocks/:id/toggle' as const,
+      input: z.object({ isCompleted: z.boolean() }),
+    },
+    remove: {
+      method: 'DELETE' as const,
+      path: '/api/schedule-blocks/:id' as const,
+    },
+    clearGenerated: {
+      method: 'DELETE' as const,
+      path: '/api/schedule-blocks/generated' as const,
     },
   },
 };
