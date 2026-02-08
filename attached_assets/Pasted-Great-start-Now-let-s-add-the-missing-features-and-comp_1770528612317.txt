@@ -1,0 +1,189 @@
+Great start! Now let's add the missing features and complete the app. Make these changes:
+
+PART 1: ADD LOGIN/ONBOARDING FLOW
+
+1. CREATE LOGIN SCREEN (New default landing page):
+- Clean, simple design with app logo/name at top
+- Welcoming headline: "Never miss an assignment again"
+- Subheadline: "Your stress-free student planner"
+- Two input fields:
+  * "Student's Email" (email input)
+  * "Password" (password input, masked)
+- Large "Sign In" button (blue, rounded)
+- Below button: "Don't have an account? Sign up" link
+- For MVP: Any email/password combo works (no real auth yet)
+- After clicking Sign In, navigate to Today View
+
+2. CREATE SIGNUP SCREEN:
+- Similar clean design
+- Fields:
+  * "First Name"
+  * "Email"  
+  * "Password"
+  * "University" (dropdown with options: Purdue University, IU Bloomington, Notre Dame, Other)
+- "Create Account" button
+- "Already have an account? Sign in" link
+- After signup, navigate to Today View
+
+3. ADD ONBOARDING (Optional, after signup):
+- Single screen: "Let's connect your accounts"
+- Large button: "Connect Brightspace" (with Brightspace logo if possible)
+- "Skip for now" link at bottom
+- For now, clicking either goes to Today View
+- Store connected state in localStorage
+
+PART 2: ENHANCE TODAY VIEW
+
+4. ADD MORE DETAILS TO TODAY VIEW:
+- Add "Study Streak" counter in top right corner:
+  * Shows: "5 day streak 🔥" 
+  * Small, doesn't distract from main content
+- Add time-based greeting logic:
+  * Before 12pm: "Good morning!"
+  * 12pm-5pm: "Good afternoon!"  
+  * After 5pm: "Good evening!"
+- Each task card should show:
+  * Platform badge (small pill): "Brightspace", "Gradescope", "Piazza", etc.
+  * Color-coded by course (each course gets a color)
+  * Checkbox to mark complete (left side of card)
+  * When checked, card gets strikethrough and faded opacity
+- Add "Focus Mode" button at top:
+  * When clicked, shows ONLY the next task due
+  * Hides everything else
+  * "Exit Focus Mode" to go back
+- Empty state when no tasks today:
+  * Large "🎉 Nothing due today!"
+  * "Enjoy your free time" message
+  * Still show "COMING UP" section
+
+PART 3: ENHANCE WEEK VIEW
+
+5. IMPROVE WEEK CALENDAR:
+- Add month navigation arrows (< February 2026 >)
+- Week strip should:
+  * Auto-scroll to current day on load
+  * Highlight current day with blue background
+  * Show task count numbers (not just dots): "3 tasks"
+- In expanded day view:
+  * Group by time of day: "Morning (before 12pm)", "Afternoon (12-5pm)", "Evening (after 5pm)"
+  * Add "Add Task" button at bottom (for now, just shows alert "Coming soon!")
+- Add quick "Jump to Today" button if viewing a different day
+
+PART 4: ENHANCE ALL TASKS VIEW
+
+6. IMPROVE ALL TASKS:
+- Filter dropdown should actually work:
+  * Options: All Classes, CS 159, PHYS 172, ENGR 132, CHM 115, MATH 166
+  * Filtering updates the list in real-time
+- Add search bar at top:
+  * Placeholder: "Search assignments..."
+  * Filters by assignment name as user types
+- "LATER" section collapse/expand:
+  * Shows "Tap to expand (15 more)" when collapsed
+  * Clicking expands to show all tasks
+  * When expanded, shows "Collapse" 
+- Add sort options:
+  * Dropdown in top right: "Sort by: Due Date, Course, Priority"
+- Each task should have:
+  * Swipe left to delete (or trash icon on right)
+  * Tap task to see full details (modal popup showing description, links, etc.)
+
+PART 5: ADD SETTINGS SCREEN
+
+7. CREATE SETTINGS (Add 4th tab to bottom nav):
+- Bottom nav now has 4 tabs: Today, Week, All, Settings (gear icon)
+- Settings screen includes:
+  * Profile section: Shows name, email, university
+  * "Connected Accounts" section:
+    - List of connected platforms (Brightspace, Gradescope, etc.)
+    - Each has toggle switch and "Reconnect" button
+    - "Add Platform" button
+  * "Notifications" section:
+    - Toggle for push notifications
+    - "Remind me" dropdown: 1 hour before, 1 day before, 1 week before
+  * "Study Streak" section:
+    - Current streak count
+    - "Streak history" (shows calendar grid)
+  * "Theme" section:
+    - Toggle for dark mode (don't implement yet, just UI)
+  * "About" section:
+    - App version
+    - "Give Feedback" button
+    - "Log Out" button (returns to login screen)
+
+PART 6: ADD SMART FEATURES
+
+8. IMPLEMENT SMART NOTIFICATIONS (UI only for now):
+- Add notifications icon in top right of Today View
+- Clicking shows dropdown with sample notifications:
+  * "CS Homework 2 due in 2 hours"
+  * "Don't forget: PHYS Quiz tomorrow at 9am"
+  * "You're on a 5-day streak! Keep it up 🔥"
+- Mark notifications as read
+
+9. ADD STUDY PLAN FEATURE (Premium upsell):
+- On Today View, add button: "Generate Study Plan ✨" (sparkle indicates premium)
+- Clicking shows modal:
+  * "Upgrade to Premium"
+  * "Get AI-powered study plans based on your workload"
+  * Shows sample study plan (blocked out with blur)
+  * "Upgrade Now" button ($4.99/month)
+  * "Maybe Later" link
+- This sets up your monetization strategy
+
+PART 7: DATA IMPROVEMENTS
+
+10. MAKE SAMPLE DATA MORE REALISTIC:
+- Add at least 20 assignments total
+- Include variety:
+  * Homework, Quizzes, Exams, Labs, Reading, Projects
+  * Different platforms: Brightspace, Gradescope, Piazza, PearsonMyLab, WebAssign
+  * Different times: 8:00 AM, 9:30 AM, 11:59 PM, etc.
+  * Some all-day events (Exam 1, Project Due)
+- Add course colors:
+  * CS 159: Blue (#3b82f6)
+  * PHYS 172: Purple (#a855f7)
+  * ENGR 132: Orange (#f97316)
+  * CHM 115: Green (#22c55e)
+  * MATH 166: Red (#ef4444)
+
+PART 8: POLISH & UX
+
+11. ADD LOADING STATES:
+- When "connecting" Brightspace (fake it):
+  * Show loading spinner for 2 seconds
+  * Then show success checkmark animation
+- When navigating between screens:
+  * Smooth fade transitions
+
+12. ADD ANIMATIONS:
+- Task cards slide in when screen loads
+- Checking off task: satisfying checkmark animation
+- Completing all today's tasks: confetti animation 🎉
+- Bottom nav: smooth tab indicator sliding
+
+13. RESPONSIVE DESIGN:
+- Ensure everything looks perfect on:
+  * iPhone SE (375px width)
+  * iPhone Pro (393px width)  
+  * Tablet (768px width) - should still be single column
+- Test all interactions work on touch screens
+
+IMPLEMENTATION NOTES:
+- Use React state to manage: logged in status, selected filters, completed tasks, expanded sections
+- Use localStorage to persist: login status, completed tasks, study streak
+- Create reusable components: Modal, Button, TaskCard, FilterDropdown
+- Add TypeScript interfaces for: User, Task, Course, Platform
+- Use Tailwind animations and transitions
+
+PRIORITY ORDER:
+1. Login/Signup flow (so users start at login)
+2. Enhanced Today View with all features
+3. Settings screen
+4. Week View improvements
+5. All Tasks improvements
+6. Polish/animations
+
+IMPORTANT: Keep the same calming, stress-free design aesthetic. Don't make it cluttered - every feature should feel like it reduces stress, not adds to it.
+
+Build this incrementally. Start with the login flow, then enhance each screen one at a time. Let me know when each part is complete so I can test it.
