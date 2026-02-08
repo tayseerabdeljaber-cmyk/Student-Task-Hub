@@ -37,10 +37,10 @@ export function NotificationsDropdown() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="relative w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm"
+        className="relative w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center shadow-sm"
         data-testid="button-notifications"
       >
-        <Bell className="w-5 h-5 text-slate-600" />
+        <Bell className="w-5 h-5 text-muted-foreground" />
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center" data-testid="badge-notification-count">
             {unreadCount}
@@ -56,11 +56,11 @@ export function NotificationsDropdown() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute right-0 top-12 w-80 bg-white rounded-2xl shadow-lg border border-slate-100 z-50 overflow-hidden"
+              className="absolute right-0 top-12 w-80 bg-card rounded-2xl shadow-lg border border-border z-50 overflow-hidden"
               data-testid="dropdown-notifications"
             >
-              <div className="p-3 border-b border-slate-100 flex items-center justify-between">
-                <h3 className="font-semibold text-sm text-slate-900">Notifications</h3>
+              <div className="p-3 border-b border-border flex items-center justify-between">
+                <h3 className="font-semibold text-sm text-foreground">Notifications</h3>
                 <div className="flex items-center gap-2">
                   {unreadCount > 0 && (
                     <button
@@ -71,7 +71,7 @@ export function NotificationsDropdown() {
                       Mark all read
                     </button>
                   )}
-                  <button onClick={() => setOpen(false)} className="text-slate-400">
+                  <button onClick={() => setOpen(false)} className="text-muted-foreground">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -79,17 +79,17 @@ export function NotificationsDropdown() {
               <div className="max-h-80 overflow-y-auto">
                 {grouped.length === 0 ? (
                   <div className="py-8 text-center" data-testid="text-no-notifications">
-                    <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Bell className="w-6 h-6 text-slate-300" />
+                    <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Bell className="w-6 h-6 text-muted-foreground" />
                     </div>
-                    <p className="text-sm font-medium text-slate-500">No notifications</p>
-                    <p className="text-xs text-slate-400 mt-0.5">You're all caught up!</p>
+                    <p className="text-sm font-medium text-muted-foreground">No notifications</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">You're all caught up!</p>
                   </div>
                 ) : (
                   grouped.map(group => (
                     <div key={group.label}>
-                      <div className="px-4 py-1.5 bg-slate-50">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{group.label}</p>
+                      <div className="px-4 py-1.5 bg-muted">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{group.label}</p>
                       </div>
                       {group.items.map(notif => {
                         const Icon = ICON_MAP[notif.icon] || Bell;
@@ -128,12 +128,12 @@ export function NotificationsDropdown() {
                               <div className="flex-1 min-w-0">
                                 <p className={cn(
                                   "text-sm leading-tight",
-                                  notif.read ? "text-slate-500" : "text-slate-800 font-medium"
+                                  notif.read ? "text-muted-foreground" : "text-foreground font-medium"
                                 )}>
                                   {notif.title}
                                 </p>
-                                <p className="text-xs text-slate-400 mt-0.5 truncate">{notif.body}</p>
-                                <p className="text-[10px] text-slate-300 mt-1">
+                                <p className="text-xs text-muted-foreground mt-0.5 truncate">{notif.body}</p>
+                                <p className="text-[10px] text-muted-foreground/60 mt-1">
                                   {formatDistanceToNow(new Date(notif.timestamp), { addSuffix: true })}
                                 </p>
                               </div>

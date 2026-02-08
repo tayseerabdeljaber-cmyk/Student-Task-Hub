@@ -42,7 +42,7 @@ export function SyncIndicator() {
   return (
     <button
       onClick={triggerSync}
-      className="w-full flex items-center justify-center gap-2 py-1.5 px-3 bg-slate-50 text-slate-500 text-xs font-medium"
+      className="w-full flex items-center justify-center gap-2 py-1.5 px-3 bg-muted text-muted-foreground text-xs font-medium"
       data-testid="sync-indicator"
     >
       <Cloud className="w-3.5 h-3.5" />

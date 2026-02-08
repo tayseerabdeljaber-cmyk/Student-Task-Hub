@@ -58,8 +58,8 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
     <div
       onClick={() => onTap?.(assignment)}
       className={cn(
-        "group relative rounded-2xl bg-white border border-slate-100 shadow-sm transition-all duration-300",
-        assignment.completed && "opacity-60 bg-slate-50",
+        "group relative rounded-2xl bg-card border border-border shadow-sm transition-all duration-300",
+        assignment.completed && "opacity-60 bg-muted",
         compact ? "p-4" : "p-5",
         onTap && "cursor-pointer"
       )}
@@ -106,14 +106,14 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
           </div>
 
           <h3 className={cn(
-            "font-semibold text-slate-900 truncate pr-2 transition-all",
+            "font-semibold text-foreground truncate pr-2 transition-all",
             compact ? "text-sm" : "text-base",
-            assignment.completed && "line-through text-slate-400"
+            assignment.completed && "line-through text-muted-foreground"
           )} data-testid={`text-title-${assignment.id}`}>
             {assignment.title}
           </h3>
 
-          <div className="mt-1.5 flex items-center gap-3 text-slate-500 text-xs font-medium">
+          <div className="mt-1.5 flex items-center gap-3 text-muted-foreground text-xs font-medium">
             <div className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
               <span>{format(new Date(assignment.dueDate), "h:mm a")}</span>

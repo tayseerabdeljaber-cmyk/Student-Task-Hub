@@ -143,20 +143,20 @@ export function AddActivityModal({ open, onOpenChange, editingActivity }: Props)
 
   return (
     <div className="fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center" onClick={() => onOpenChange(false)}>
-      <div className="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl" onClick={e => e.stopPropagation()} data-testid="modal-add-activity">
-        <div className="sticky top-0 bg-white z-10 px-5 pt-5 pb-3 border-b border-slate-100">
+      <div className="bg-card w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl" onClick={e => e.stopPropagation()} data-testid="modal-add-activity">
+        <div className="sticky top-0 bg-card z-10 px-5 pt-5 pb-3 border-b border-border">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold text-slate-900">{editingActivity ? "Edit Activity" : "Add Activity"}</h2>
+            <h2 className="text-lg font-bold text-foreground">{editingActivity ? "Edit Activity" : "Add Activity"}</h2>
             <Button size="icon" variant="ghost" onClick={() => onOpenChange(false)} data-testid="button-close-modal">
               <X className="w-4 h-4" />
             </Button>
           </div>
           {!editingActivity && (
             <div className="flex gap-1">
-              <button onClick={() => setTab("quick")} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors", tab === "quick" ? "bg-indigo-100 text-indigo-700" : "text-slate-500")} data-testid="tab-quick-add">
+              <button onClick={() => setTab("quick")} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors", tab === "quick" ? "bg-indigo-100 text-indigo-700" : "text-muted-foreground")} data-testid="tab-quick-add">
                 Quick Add
               </button>
-              <button onClick={() => setTab("detailed")} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors", tab === "detailed" ? "bg-indigo-100 text-indigo-700" : "text-slate-500")} data-testid="tab-detailed">
+              <button onClick={() => setTab("detailed")} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors", tab === "detailed" ? "bg-indigo-100 text-indigo-700" : "text-muted-foreground")} data-testid="tab-detailed">
                 Detailed
               </button>
             </div>
@@ -167,7 +167,7 @@ export function AddActivityModal({ open, onOpenChange, editingActivity }: Props)
           {tab === "quick" && !editingActivity ? (
             <div className="grid grid-cols-2 gap-2" data-testid="grid-quick-templates">
               {QUICK_TEMPLATES.map((t) => (
-                <button key={t.name} onClick={() => applyTemplate(t)} className="flex items-center gap-2 p-3 rounded-xl border border-slate-100 text-left transition-colors hover-elevate" data-testid={`button-template-${t.name.toLowerCase().replace(/\s+/g, "-")}`}>
+                <button key={t.name} onClick={() => applyTemplate(t)} className="flex items-center gap-2 p-3 rounded-xl border border-border text-left transition-colors hover-elevate" data-testid={`button-template-${t.name.toLowerCase().replace(/\s+/g, "-")}`}>
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${t.color}20` }}>
                     <span className="text-sm" style={{ color: t.color }}>
                       {t.icon === "BookOpen" && <BookOpen className="w-4 h-4" />}
@@ -180,22 +180,22 @@ export function AddActivityModal({ open, onOpenChange, editingActivity }: Props)
                       {t.icon === "Pencil" && <Pencil className="w-4 h-4" />}
                     </span>
                   </div>
-                  <span className="text-sm font-medium text-slate-700">{t.name}</span>
+                  <span className="text-sm font-medium text-foreground">{t.name}</span>
                 </button>
               ))}
             </div>
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">Activity Name</label>
-                <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Gym Workout" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300" data-testid="input-activity-name" />
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Activity Name</label>
+                <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Gym Workout" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-300" data-testid="input-activity-name" />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">Category</label>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Category</label>
                 <div className="flex flex-wrap gap-1.5">
                   {CATEGORIES.map(c => (
-                    <button key={c} onClick={() => setType(c)} className={cn("px-2.5 py-1 rounded-lg text-xs font-medium capitalize transition-colors", type === c ? "bg-indigo-100 text-indigo-700" : "bg-slate-50 text-slate-500")} data-testid={`button-category-${c}`}>
+                    <button key={c} onClick={() => setType(c)} className={cn("px-2.5 py-1 rounded-lg text-xs font-medium capitalize transition-colors", type === c ? "bg-indigo-100 text-indigo-700" : "bg-muted text-muted-foreground")} data-testid={`button-category-${c}`}>
                       {c}
                     </button>
                   ))}
@@ -203,7 +203,7 @@ export function AddActivityModal({ open, onOpenChange, editingActivity }: Props)
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">Color</label>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Color</label>
                 <div className="flex flex-wrap gap-2">
                   {COLORS.map(c => (
                     <button key={c} onClick={() => setColor(c)} className={cn("w-7 h-7 rounded-full transition-transform", color === c && "ring-2 ring-offset-2 ring-indigo-500 scale-110")} style={{ backgroundColor: c }} data-testid={`button-color-${c.slice(1)}`} />
@@ -212,10 +212,10 @@ export function AddActivityModal({ open, onOpenChange, editingActivity }: Props)
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">Frequency</label>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Frequency</label>
                 <div className="flex gap-1.5">
                   {["once", "daily", "weekly"].map(f => (
-                    <button key={f} onClick={() => { setFrequency(f); if (f === "daily") setDaysOfWeek(DAYS); }} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors", frequency === f ? "bg-indigo-100 text-indigo-700" : "bg-slate-50 text-slate-500")} data-testid={`button-frequency-${f}`}>
+                    <button key={f} onClick={() => { setFrequency(f); if (f === "daily") setDaysOfWeek(DAYS); }} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors", frequency === f ? "bg-indigo-100 text-indigo-700" : "bg-muted text-muted-foreground")} data-testid={`button-frequency-${f}`}>
                       {f === "once" ? "One-time" : f}
                     </button>
                   ))}
@@ -224,10 +224,10 @@ export function AddActivityModal({ open, onOpenChange, editingActivity }: Props)
 
               {frequency === "weekly" && (
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Days of Week</label>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Days of Week</label>
                   <div className="flex gap-1">
                     {DAYS.map(d => (
-                      <button key={d} onClick={() => toggleDay(d)} className={cn("w-9 h-9 rounded-lg text-xs font-medium transition-colors", daysOfWeek.includes(d) ? "bg-indigo-500 text-white" : "bg-slate-100 text-slate-500")} data-testid={`button-day-${d.toLowerCase()}`}>
+                      <button key={d} onClick={() => toggleDay(d)} className={cn("w-9 h-9 rounded-lg text-xs font-medium transition-colors", daysOfWeek.includes(d) ? "bg-indigo-500 text-white" : "bg-muted text-muted-foreground")} data-testid={`button-day-${d.toLowerCase()}`}>
                         {DAY_ABBR[d]}
                       </button>
                     ))}
@@ -237,35 +237,35 @@ export function AddActivityModal({ open, onOpenChange, editingActivity }: Props)
 
               {frequency === "once" && (
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Date</label>
-                  <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" data-testid="input-event-date" />
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Date</label>
+                  <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground" data-testid="input-event-date" />
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Start Time</label>
-                  <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" data-testid="input-start-time" />
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Start Time</label>
+                  <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground" data-testid="input-start-time" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">End Time</label>
-                  <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" data-testid="input-end-time" />
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">End Time</label>
+                  <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground" data-testid="input-end-time" />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">Location</label>
-                <input type="text" value={location} onChange={e => setLocation(e.target.value)} placeholder="e.g., Lawson 1142" list="location-suggestions" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" data-testid="input-location" />
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Location</label>
+                <input type="text" value={location} onChange={e => setLocation(e.target.value)} placeholder="e.g., Lawson 1142" list="location-suggestions" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground" data-testid="input-location" />
                 <datalist id="location-suggestions">
                   {LOCATIONS.map(l => <option key={l} value={l} />)}
                 </datalist>
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">Priority</label>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Priority</label>
                 <div className="flex gap-1.5">
                   {PRIORITY_OPTIONS.map(p => (
-                    <button key={p} onClick={() => setPriority(p)} className={cn("px-2.5 py-1 rounded-lg text-xs font-medium capitalize transition-colors", priority === p ? "bg-indigo-100 text-indigo-700" : "bg-slate-50 text-slate-500")} data-testid={`button-priority-${p}`}>
+                    <button key={p} onClick={() => setPriority(p)} className={cn("px-2.5 py-1 rounded-lg text-xs font-medium capitalize transition-colors", priority === p ? "bg-indigo-100 text-indigo-700" : "bg-muted text-muted-foreground")} data-testid={`button-priority-${p}`}>
                       {p}
                     </button>
                   ))}
@@ -275,18 +275,18 @@ export function AddActivityModal({ open, onOpenChange, editingActivity }: Props)
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" checked={flexible} onChange={e => setFlexible(e.target.checked)} className="rounded" data-testid="checkbox-flexible" />
-                  <span className="text-xs text-slate-600">Flexible timing (AI can adjust)</span>
+                  <span className="text-xs text-muted-foreground">Flexible timing (AI can adjust)</span>
                 </label>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Buffer Before (min)</label>
-                  <input type="number" min={0} max={30} value={bufferBefore} onChange={e => setBufferBefore(Number(e.target.value))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" data-testid="input-buffer-before" />
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Buffer Before (min)</label>
+                  <input type="number" min={0} max={30} value={bufferBefore} onChange={e => setBufferBefore(Number(e.target.value))} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground" data-testid="input-buffer-before" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Buffer After (min)</label>
-                  <input type="number" min={0} max={30} value={bufferAfter} onChange={e => setBufferAfter(Number(e.target.value))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" data-testid="input-buffer-after" />
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Buffer After (min)</label>
+                  <input type="number" min={0} max={30} value={bufferAfter} onChange={e => setBufferAfter(Number(e.target.value))} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground" data-testid="input-buffer-after" />
                 </div>
               </div>
 
