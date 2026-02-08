@@ -163,12 +163,12 @@ function WeekTimelineView({ currentDate, activities, scheduleBlocks }: { current
         </div>
         <div className="relative">
           {hours.map(h => (
-            <div key={h} className="grid grid-cols-8 gap-px bg-slate-50" style={{ height: 48 }}>
+            <div key={h} className="grid grid-cols-8 gap-px bg-muted" style={{ height: 48 }}>
               <div className="bg-white flex items-start justify-end pr-1 pt-0.5">
                 <span className="text-[9px] text-slate-400">{h === 0 ? "12a" : h < 12 ? `${h}a` : h === 12 ? "12p" : `${h - 12}p`}</span>
               </div>
               {days.map(d => (
-                <div key={d.toISOString()} className={cn("bg-white border-t border-slate-50 relative", isToday(d) && "bg-indigo-50/30")} />
+                <div key={d.toISOString()} className={cn("bg-white border-t border-border relative", isToday(d) && "bg-indigo-50/30")} />
               ))}
             </div>
           ))}
@@ -268,7 +268,7 @@ function DayView({ currentDate, activities, scheduleBlocks }: { currentDate: Dat
                       {item.isBlock && item.blockId && (
                         <button
                           onClick={() => toggleMutation.mutate({ id: item.blockId!, isCompleted: !item.isCompleted })}
-                          className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all", item.isCompleted ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300")}
+                          className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all", item.isCompleted ? "bg-emerald-500 border-emerald-500 text-white" : "border-border")}
                           data-testid={`button-toggle-block-${item.blockId}`}
                         >
                           {item.isCompleted && <Check className="w-3 h-3 stroke-[4]" />}
@@ -310,11 +310,11 @@ function AgendaView({ currentDate, activities, scheduleBlocks }: { currentDate: 
             </div>
             <div className="space-y-1.5">
               {items.map(item => (
-                <div key={item.id} className={cn("flex items-center gap-3 py-2 px-3 rounded-lg bg-white border border-slate-100", item.isCompleted && "opacity-50")}>
+                <div key={item.id} className={cn("flex items-center gap-3 py-2 px-3 rounded-lg bg-white border border-border", item.isCompleted && "opacity-50")}>
                   {item.isBlock && item.blockId ? (
                     <button
                       onClick={() => toggleMutation.mutate({ id: item.blockId!, isCompleted: !item.isCompleted })}
-                      className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0", item.isCompleted ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300")}
+                      className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0", item.isCompleted ? "bg-emerald-500 border-emerald-500 text-white" : "border-border")}
                     >
                       {item.isCompleted && <Check className="w-3 h-3 stroke-[4]" />}
                     </button>
