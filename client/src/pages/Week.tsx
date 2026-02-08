@@ -71,7 +71,7 @@ export default function Week() {
     if (tasks.length === 0) return null;
     return (
       <div className="mb-6">
-        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">{label}</h3>
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{label}</h3>
         <div className="space-y-3">
           {tasks.map(task => (
             <TaskCard key={task.id} assignment={task} compact onTap={setSelectedTask} />
@@ -82,23 +82,23 @@ export default function Week() {
   };
 
   return (
-    <div className="pb-24 pt-6 min-h-screen bg-background flex flex-col">
-      <header className="px-4 mb-6 sticky top-0 bg-background/95 backdrop-blur z-10 py-2">
+    <div className="pb-24 pt-6 min-h-screen bg-slate-50 flex flex-col">
+      <header className="px-4 mb-6 sticky top-0 bg-slate-50/95 backdrop-blur z-10 py-2">
         {/* Month Navigation */}
         <div className="flex items-center justify-between mb-4">
-          <button onClick={handlePrevWeek} className="p-2 text-muted-foreground" data-testid="button-prev-week">
+          <button onClick={handlePrevWeek} className="p-2 text-slate-400" data-testid="button-prev-week">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-xl font-bold text-foreground" data-testid="text-week-header">
+          <h1 className="text-xl font-bold text-slate-900" data-testid="text-week-header">
             {format(currentWeekStart, "MMM d")} - {format(addDays(currentWeekStart, 6), "MMM d, yyyy")}
           </h1>
-          <button onClick={handleNextWeek} className="p-2 text-muted-foreground" data-testid="button-next-week">
+          <button onClick={handleNextWeek} className="p-2 text-slate-400" data-testid="button-next-week">
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
 
         {/* Date Strip */}
-        <div className="flex justify-between items-center bg-card rounded-2xl p-2 shadow-sm border border-border">
+        <div className="flex justify-between items-center bg-white rounded-2xl p-2 shadow-sm border border-slate-100">
           {weekDays.map((date) => {
             const isSelected = isSameDay(date, selectedDate);
             const isToday = isSameDay(date, new Date());
@@ -110,7 +110,7 @@ export default function Week() {
                 onClick={() => setSelectedDate(date)}
                 className={cn(
                   "flex flex-col items-center justify-center w-10 h-16 rounded-xl transition-all duration-200 relative",
-                  isSelected ? "bg-indigo-500 text-white shadow-md shadow-indigo-200" : "text-muted-foreground"
+                  isSelected ? "bg-indigo-500 text-white shadow-md shadow-indigo-200" : "text-slate-500"
                 )}
                 data-testid={`button-day-${format(date, "d")}`}
               >
@@ -119,7 +119,7 @@ export default function Week() {
                 </span>
                 <span className={cn(
                   "text-lg font-bold leading-none mt-0.5",
-                  isSelected ? "text-white" : "text-foreground"
+                  isSelected ? "text-white" : "text-slate-700"
                 )}>
                   {format(date, "d")}
                 </span>
@@ -144,7 +144,7 @@ export default function Week() {
 
       <main className="flex-1 px-4 max-w-md mx-auto w-full">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider" data-testid="text-selected-day">
+          <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider" data-testid="text-selected-day">
             {isViewingToday ? "Today's Schedule" : format(selectedDate, "EEEE, MMM d")}
           </h2>
           {!isCurrentWeek && (
@@ -176,7 +176,7 @@ export default function Week() {
 
                 {completedDaily.length > 0 && (
                   <div className="mb-6 opacity-60">
-                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Completed</h3>
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Completed</h3>
                     <div className="space-y-3">
                       {completedDaily.map(task => (
                         <TaskCard key={task.id} assignment={task} compact onTap={setSelectedTask} />
@@ -187,11 +187,11 @@ export default function Week() {
               </>
             ) : (
               <div className="flex flex-col items-center justify-center h-48 text-center">
-                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                  <CalendarDays className="w-8 h-8 text-muted-foreground" />
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                  <CalendarDays className="w-8 h-8 text-slate-300" />
                 </div>
-                <h3 className="text-base font-semibold text-foreground">No tasks due</h3>
-                <p className="text-muted-foreground text-sm mt-1">Enjoy your free time or get ahead.</p>
+                <h3 className="text-base font-semibold text-slate-700">No tasks due</h3>
+                <p className="text-slate-400 text-sm mt-1">Enjoy your free time or get ahead.</p>
               </div>
             )}
           </motion.div>

@@ -1,11 +1,9 @@
-import { useState } from "react";
 import { format } from "date-fns";
 import { Check, Clock, BookOpen, GraduationCap, FileText, FlaskConical, Trash2, Folder } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { AssignmentWithCourse } from "@shared/schema";
 import { useToggleAssignment, useDeleteAssignment } from "@/hooks/use-assignments";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface TaskCardProps {
   assignment: AssignmentWithCourse;
@@ -35,7 +33,6 @@ const PLATFORM_COLORS: Record<string, string> = {
 export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) {
   const toggleMutation = useToggleAssignment();
   const deleteMutation = useDeleteAssignment();
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const Icon = TYPE_ICONS[assignment.type] || BookOpen;
   const isOverdue = new Date(assignment.dueDate) < new Date() && !assignment.completed;
 
@@ -49,7 +46,7 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setConfirmDelete(true);
+    deleteMutation.mutate(assignment.id);
   };
 
   const platformClass = PLATFORM_COLORS[assignment.platform] || "bg-slate-100 text-slate-600";
@@ -58,8 +55,8 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
     <div
       onClick={() => onTap?.(assignment)}
       className={cn(
-        "group relative rounded-2xl bg-card border border-border shadow-sm transition-all duration-300",
-        assignment.completed && "opacity-60 bg-muted",
+        "group relative rounded-2xl bg-white border border-slate-100 shadow-sm transition-all duration-300",
+        assignment.completed && "opacity-60 bg-slate-50",
         compact ? "p-4" : "p-5",
         onTap && "cursor-pointer"
       )}
@@ -106,14 +103,14 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
           </div>
 
           <h3 className={cn(
-            "font-semibold text-foreground truncate pr-2 transition-all",
+            "font-semibold text-slate-900 truncate pr-2 transition-all",
             compact ? "text-sm" : "text-base",
-            assignment.completed && "line-through text-muted-foreground"
+            assignment.completed && "line-through text-slate-400"
           )} data-testid={`text-title-${assignment.id}`}>
             {assignment.title}
           </h3>
 
-          <div className="mt-1.5 flex items-center gap-3 text-muted-foreground text-xs font-medium">
+          <div className="mt-1.5 flex items-center gap-3 text-slate-500 text-xs font-medium">
             <div className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
               <span>{format(new Date(assignment.dueDate), "h:mm a")}</span>
@@ -133,16 +130,6 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
-
-      <ConfirmDialog
-        open={confirmDelete}
-        onOpenChange={setConfirmDelete}
-        title="Delete Assignment"
-        description={`Are you sure you want to delete "${assignment.title}"? This action cannot be undone.`}
-        confirmLabel="Delete"
-        variant="destructive"
-        onConfirm={() => deleteMutation.mutate(assignment.id)}
-      />
     </div>
   );
 }

@@ -1,13 +1,14 @@
+import { useState, useEffect } from "react";
 import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { BottomNav } from "@/components/BottomNav";
 import { SyncIndicator } from "@/components/SyncIndicator";
-import { useAuth } from "@/hooks/use-auth";
-import { Skeleton } from "@/components/ui/skeleton";
 
-import Landing from "@/pages/Landing";
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
+import Onboarding from "@/pages/Onboarding";
 import Today from "@/pages/Today";
 import Week from "@/pages/Week";
 import AllTasks from "@/pages/AllTasks";
@@ -17,62 +18,92 @@ import Schedule from "@/pages/Schedule";
 import Analytics from "@/pages/Analytics";
 import NotFound from "@/pages/not-found";
 
-function AuthenticatedRoutes() {
-  const [location] = useLocation();
-  const showBottomNav = !["/login", "/signup", "/onboarding"].includes(location);
-
-  return (
-    <>
-      {showBottomNav && <SyncIndicator />}
-      <Switch>
-        <Route path="/" component={Today} />
-        <Route path="/week" component={Week} />
-        <Route path="/activities" component={Activities} />
-        <Route path="/schedule" component={Schedule} />
-        <Route path="/all" component={AllTasks} />
-        <Route path="/analytics" component={Analytics} />
-        <Route path="/settings" component={Settings} />
-        <Route component={NotFound} />
-      </Switch>
-      {showBottomNav && <BottomNav />}
-    </>
-  );
-}
-
-function AppContent() {
-  const { isLoading, isAuthenticated } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="space-y-4 w-full max-w-sm px-6">
-          <Skeleton className="h-16 w-16 rounded-2xl mx-auto" />
-          <Skeleton className="h-8 w-48 mx-auto" />
-          <Skeleton className="h-4 w-64 mx-auto" />
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <Switch>
-        <Route path="/" component={Landing} />
-        <Route>
-          <Redirect to="/" />
-        </Route>
-      </Switch>
-    );
-  }
-
-  return <AuthenticatedRoutes />;
-}
-
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem("studyflow_logged_in") === "true";
+  });
+  const [userName, setUserName] = useState(() => {
+    return localStorage.getItem("studyflow_name") || "Student";
+  });
+  const [userEmail, setUserEmail] = useState(() => {
+    return localStorage.getItem("studyflow_email") || "";
+  });
+  const [location] = useLocation();
+
+  useEffect(() => {
+    if (!localStorage.getItem("studyStreak")) {
+      localStorage.setItem("studyStreak", "5");
+    }
+  }, []);
+
+  const handleLogin = (email: string) => {
+    localStorage.setItem("studyflow_logged_in", "true");
+    localStorage.setItem("studyflow_email", email);
+    const name = email.split("@")[0];
+    localStorage.setItem("studyflow_name", name);
+    setIsLoggedIn(true);
+    setUserEmail(email);
+    setUserName(name);
+  };
+
+  const handleSignup = (name: string, email: string) => {
+    localStorage.setItem("studyflow_logged_in", "true");
+    localStorage.setItem("studyflow_name", name);
+    localStorage.setItem("studyflow_email", email);
+    setIsLoggedIn(true);
+    setUserName(name);
+    setUserEmail(email);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("studyflow_logged_in");
+    localStorage.removeItem("studyflow_name");
+    localStorage.removeItem("studyflow_email");
+    setIsLoggedIn(false);
+    setUserName("Student");
+    setUserEmail("");
+  };
+
+  const showBottomNav = isLoggedIn && !["/login", "/signup", "/onboarding"].includes(location);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-background text-foreground font-sans antialiased pb-safe">
-        <AppContent />
+      <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased pb-safe">
+        {showBottomNav && <SyncIndicator />}
+        <Switch>
+          <Route path="/login">
+            {isLoggedIn ? <Redirect to="/" /> : <Login onLogin={handleLogin} />}
+          </Route>
+          <Route path="/signup">
+            {isLoggedIn ? <Redirect to="/" /> : <Signup onSignup={handleSignup} />}
+          </Route>
+          <Route path="/onboarding">
+            {!isLoggedIn ? <Redirect to="/login" /> : <Onboarding />}
+          </Route>
+          <Route path="/">
+            {!isLoggedIn ? <Redirect to="/login" /> : <Today />}
+          </Route>
+          <Route path="/week">
+            {!isLoggedIn ? <Redirect to="/login" /> : <Week />}
+          </Route>
+          <Route path="/activities">
+            {!isLoggedIn ? <Redirect to="/login" /> : <Activities />}
+          </Route>
+          <Route path="/schedule">
+            {!isLoggedIn ? <Redirect to="/login" /> : <Schedule />}
+          </Route>
+          <Route path="/all">
+            {!isLoggedIn ? <Redirect to="/login" /> : <AllTasks />}
+          </Route>
+          <Route path="/analytics">
+            {!isLoggedIn ? <Redirect to="/login" /> : <Analytics />}
+          </Route>
+          <Route path="/settings">
+            {!isLoggedIn ? <Redirect to="/login" /> : <Settings userName={userName} userEmail={userEmail} onLogout={handleLogout} />}
+          </Route>
+          <Route component={NotFound} />
+        </Switch>
+        {showBottomNav && <BottomNav />}
         <Toaster />
       </div>
     </QueryClientProvider>

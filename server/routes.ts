@@ -4,7 +4,6 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import { addDays, setHours, setMinutes, subDays, subHours } from "date-fns";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
 
 async function seedDatabase() {
   const existingCourses = await storage.getCourses();
@@ -95,9 +94,6 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  await setupAuth(app);
-  registerAuthRoutes(app);
-
   await seedDatabase();
   await seedActivities();
 

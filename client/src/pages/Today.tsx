@@ -66,14 +66,14 @@ export default function Today() {
     : upcomingTasks[0];
 
   return (
-    <div className="pb-24 px-4 pt-8 max-w-md mx-auto min-h-screen bg-background">
+    <div className="pb-24 px-4 pt-8 max-w-md mx-auto min-h-screen bg-slate-50">
       {/* Header */}
       <header className="mb-8">
-        <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1" data-testid="text-date">
+        <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-1" data-testid="text-date">
           {format(new Date(), "EEEE, MMMM d")}
         </p>
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-3xl font-bold text-foreground" data-testid="text-greeting">
+          <h1 className="text-3xl font-bold text-slate-900" data-testid="text-greeting">
             {getGreeting()}
           </h1>
           <div className="flex items-center gap-2">
@@ -135,10 +135,10 @@ export default function Today() {
             {nextDueTask ? (
               <TaskCard assignment={nextDueTask} onTap={setSelectedTask} />
             ) : (
-              <div className="bg-card rounded-2xl p-8 text-center border border-dashed border-border">
+              <div className="bg-white rounded-2xl p-8 text-center border border-dashed border-slate-200">
                 <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
-                <h3 className="font-semibold text-foreground">Nothing to focus on!</h3>
-                <p className="text-sm text-muted-foreground mt-1">All tasks done. You've earned a break.</p>
+                <h3 className="font-semibold text-slate-900">Nothing to focus on!</h3>
+                <p className="text-sm text-slate-500 mt-1">All tasks done. You've earned a break.</p>
               </div>
             )}
           </motion.div>
@@ -153,7 +153,7 @@ export default function Today() {
             {/* Due Today Section */}
             <section className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-foreground" data-testid="text-due-today-heading">Due Today</h2>
+                <h2 className="text-lg font-bold text-slate-800" data-testid="text-due-today-heading">Due Today</h2>
                 <span className="text-xs font-semibold px-2 py-1 bg-indigo-50 text-indigo-600 rounded-full" data-testid="badge-task-count">
                   {todaysTasks.length} {todaysTasks.length === 1 ? "task" : "tasks"} left
                 </span>
@@ -172,25 +172,25 @@ export default function Today() {
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="bg-card rounded-2xl p-8 text-center border border-emerald-100 shadow-sm"
+                    className="bg-white rounded-2xl p-8 text-center border border-emerald-100 shadow-sm"
                   >
                     <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
                       <PartyPopper className="w-8 h-8 text-emerald-500" />
                     </div>
-                    <h3 className="text-foreground font-bold text-lg" data-testid="text-all-caught-up">You're all caught up!</h3>
-                    <p className="text-muted-foreground text-sm mt-1">All tasks completed for today.</p>
+                    <h3 className="text-slate-900 font-bold text-lg" data-testid="text-all-caught-up">You're all caught up!</h3>
+                    <p className="text-slate-500 text-sm mt-1">All tasks completed for today.</p>
                   </motion.div>
                 ) : (
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="bg-card rounded-2xl p-8 text-center border border-dashed border-border shadow-sm"
+                    className="bg-white rounded-2xl p-8 text-center border border-dashed border-slate-200 shadow-sm"
                   >
                     <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
                       <PartyPopper className="w-8 h-8 text-indigo-500" />
                     </div>
-                    <h3 className="text-foreground font-bold text-lg" data-testid="text-nothing-due">Nothing due today!</h3>
-                    <p className="text-muted-foreground text-sm mt-1">Enjoy your free time</p>
+                    <h3 className="text-slate-900 font-bold text-lg" data-testid="text-nothing-due">Nothing due today!</h3>
+                    <p className="text-slate-500 text-sm mt-1">Enjoy your free time</p>
                   </motion.div>
                 )}
               </div>
@@ -199,7 +199,7 @@ export default function Today() {
             {/* Completed Today */}
             {completedToday.length > 0 && (
               <section className="mb-8 opacity-75">
-                <h2 className="text-sm font-bold text-muted-foreground mb-3 uppercase tracking-wider" data-testid="text-completed-heading">
+                <h2 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider" data-testid="text-completed-heading">
                   Completed ({completedToday.length})
                 </h2>
                 <div className="space-y-3">
@@ -212,17 +212,17 @@ export default function Today() {
 
             {visibleRecs.length > 0 && (
               <section className="mb-8">
-                <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2" data-testid="text-recommendations-heading">
+                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2" data-testid="text-recommendations-heading">
                   <Lightbulb className="w-5 h-5 text-amber-500" />
                   Recommendations
                 </h2>
-                <Card className="bg-card rounded-2xl border-border overflow-hidden divide-y divide-border">
+                <Card className="bg-white rounded-2xl border-slate-100 overflow-hidden divide-y divide-slate-50">
                   {visibleRecs.map(rec => (
                     <div key={rec.id} className="p-4 relative" data-testid={`recommendation-${rec.id}`}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
-                          <p className="text-sm font-semibold text-foreground">{rec.title}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{rec.description}</p>
+                          <p className="text-sm font-semibold text-slate-800">{rec.title}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">{rec.description}</p>
                           {rec.actionLabel && (
                             <button
                               onClick={() => rec.actionRoute && setLocation(rec.actionRoute)}
@@ -285,22 +285,22 @@ export default function Today() {
 
             {/* Coming Up Section */}
             <section>
-              <h2 className="text-lg font-bold text-foreground mb-4" data-testid="text-coming-up-heading">Coming Up Next</h2>
+              <h2 className="text-lg font-bold text-slate-800 mb-4" data-testid="text-coming-up-heading">Coming Up Next</h2>
               <div className="space-y-3">
                 {isLoading ? (
                   <Skeleton className="h-20 w-full rounded-2xl" />
                 ) : upcomingTasks.length > 0 ? (
                   upcomingTasks.map(task => (
-                    <div key={task.id} className="relative pl-6 py-2 border-l-2 border-border ml-2">
-                      <div className="absolute -left-[5px] top-4 w-2.5 h-2.5 rounded-full bg-muted-foreground ring-4 ring-background" />
-                      <p className="text-xs text-muted-foreground font-semibold mb-0.5">
+                    <div key={task.id} className="relative pl-6 py-2 border-l-2 border-slate-200 ml-2">
+                      <div className="absolute -left-[5px] top-4 w-2.5 h-2.5 rounded-full bg-slate-300 ring-4 ring-slate-50" />
+                      <p className="text-xs text-slate-400 font-semibold mb-0.5">
                         {format(new Date(task.dueDate), "MMM d")} - {task.course.code}
                       </p>
-                      <h4 className="text-sm font-medium text-foreground">{task.title}</h4>
+                      <h4 className="text-sm font-medium text-slate-700">{task.title}</h4>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground italic">No upcoming tasks scheduled.</p>
+                  <p className="text-sm text-slate-400 italic">No upcoming tasks scheduled.</p>
                 )}
               </div>
             </section>

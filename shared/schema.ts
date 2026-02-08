@@ -87,5 +87,3 @@ export type AssignmentWithCourse = Assignment & { course: Course };
 
 export type CreateAssignmentRequest = InsertAssignment;
 export type UpdateAssignmentRequest = Partial<InsertAssignment>;
-
-export * from "./models/auth";
