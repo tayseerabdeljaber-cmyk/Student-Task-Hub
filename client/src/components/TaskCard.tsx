@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { format } from "date-fns";
 import { Check, Clock, BookOpen, GraduationCap, FileText, FlaskConical, Trash2, Folder } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { AssignmentWithCourse } from "@shared/schema";
 import { useToggleAssignment, useDeleteAssignment } from "@/hooks/use-assignments";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface TaskCardProps {
   assignment: AssignmentWithCourse;
@@ -33,6 +35,7 @@ const PLATFORM_COLORS: Record<string, string> = {
 export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) {
   const toggleMutation = useToggleAssignment();
   const deleteMutation = useDeleteAssignment();
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const Icon = TYPE_ICONS[assignment.type] || BookOpen;
   const isOverdue = new Date(assignment.dueDate) < new Date() && !assignment.completed;
 
@@ -46,7 +49,7 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    deleteMutation.mutate(assignment.id);
+    setConfirmDelete(true);
   };
 
   const platformClass = PLATFORM_COLORS[assignment.platform] || "bg-slate-100 text-slate-600";
@@ -130,6 +133,16 @@ export function TaskCard({ assignment, compact = false, onTap }: TaskCardProps) 
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Delete Assignment"
+        description={`Are you sure you want to delete "${assignment.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={() => deleteMutation.mutate(assignment.id)}
+      />
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
-import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Moon, Sun, Clock, MapPin, BookOpen, Coffee, UtensilsCrossed, Dumbbell, Briefcase, Trophy, Users, Heart, MessageSquare, BarChart3 } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Moon, Sun, Clock, MapPin, BookOpen, Coffee, UtensilsCrossed, Dumbbell, Briefcase, Trophy, Users, Heart, MessageSquare, BarChart3, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useActivities, useDeleteActivity, useUpdateActivity } from "@/hooks/use-activities";
 import { AddActivityModal } from "@/components/AddActivityModal";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import type { Activity } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -161,8 +162,18 @@ export default function Activities() {
     setModalOpen(true);
   };
 
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
+
   const handleDelete = (id: number) => {
-    deleteMutation.mutate(id);
+    const activity = (activities as Activity[]).find(a => a.id === id);
+    setDeleteTarget({ id, name: activity?.name || "this activity" });
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      deleteMutation.mutate(deleteTarget.id);
+      setDeleteTarget(null);
+    }
   };
 
   const handleAddNew = () => {
@@ -309,6 +320,16 @@ export default function Activities() {
         open={modalOpen}
         onOpenChange={setModalOpen}
         editingActivity={editingActivity}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+        title="Delete Activity"
+        description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={confirmDelete}
       />
     </div>
   );

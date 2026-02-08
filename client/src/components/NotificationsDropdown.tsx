@@ -78,9 +78,12 @@ export function NotificationsDropdown() {
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {grouped.length === 0 ? (
-                  <div className="py-8 text-center">
-                    <Bell className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                    <p className="text-sm text-slate-400">No notifications</p>
+                  <div className="py-8 text-center" data-testid="text-no-notifications">
+                    <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Bell className="w-6 h-6 text-slate-300" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-500">No notifications</p>
+                    <p className="text-xs text-slate-400 mt-0.5">You're all caught up!</p>
                   </div>
                 ) : (
                   grouped.map(group => (

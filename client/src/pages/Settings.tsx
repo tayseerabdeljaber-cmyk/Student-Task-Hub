@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
   User, Link2, Bell, Flame, Moon, Info, LogOut,
   ChevronRight, Plus, RotateCcw, Cloud, RefreshCw,
-  Diamond, Clock, Volume2, Star, Trash2
+  Diamond, Clock, Volume2, Star, Trash2, Download
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useSyncStatus, useNotificationPreferences, useSubscription } from "@/hooks/use-preferences";
 
 interface SettingsProps {
@@ -31,10 +33,30 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
   const brightspaceConnected = localStorage.getItem("brightspaceConnected") === "true";
   const streak = Number(localStorage.getItem("studyStreak") || "5");
   const darkMode = localStorage.getItem("studyflow_dark_mode") === "true";
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [cancelSubOpen, setCancelSubOpen] = useState(false);
 
   const handleLogout = () => {
     onLogout();
     setLocation("/login");
+  };
+
+  const handleExportData = () => {
+    const data = {
+      preferences: {
+        sync: { autoSync: sync.autoSync, frequency: sync.frequency },
+        notifications: { enabled: notifs.enabled },
+        darkMode,
+      },
+      exportedAt: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "studyflow-data.json";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleDarkMode = (enabled: boolean) => {
@@ -80,7 +102,7 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
               )}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-500">$4.99/month</span>
-                <Button variant="outline" size="sm" onClick={sub.downgrade} data-testid="button-cancel-subscription">
+                <Button variant="outline" size="sm" onClick={() => setCancelSubOpen(true)} data-testid="button-cancel-subscription">
                   Cancel
                 </Button>
               </div>
@@ -422,15 +444,49 @@ export default function Settings({ userName, userEmail, onLogout }: SettingsProp
           </div>
         </Card>
 
+        <Card className="p-5 rounded-2xl mb-4 bg-white border-slate-100">
+          <button
+            onClick={handleExportData}
+            className="w-full flex items-center justify-between text-sm text-slate-700 py-1"
+            data-testid="button-export-data"
+          >
+            <div className="flex items-center gap-2">
+              <Download className="w-4 h-4 text-slate-500" />
+              <span>Export Data</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400" />
+          </button>
+        </Card>
+
         <Button
           variant="outline"
-          onClick={handleLogout}
-          className="w-full h-12 rounded-xl text-base font-semibold text-rose-500 border-rose-200 mt-4"
+          onClick={() => setLogoutOpen(true)}
+          className="w-full rounded-xl text-base font-semibold text-rose-500 border-rose-200 mt-4"
           data-testid="button-logout"
         >
           <LogOut className="w-5 h-5 mr-2" />
           Log Out
         </Button>
+
+        <ConfirmDialog
+          open={logoutOpen}
+          onOpenChange={setLogoutOpen}
+          title="Log Out"
+          description="Are you sure you want to log out? Your preferences will be cleared from this device."
+          confirmLabel="Log Out"
+          variant="destructive"
+          onConfirm={handleLogout}
+        />
+
+        <ConfirmDialog
+          open={cancelSubOpen}
+          onOpenChange={setCancelSubOpen}
+          title="Cancel Subscription"
+          description="Are you sure you want to cancel? You'll lose access to premium features like unlimited activities, AI scheduling, and advanced analytics."
+          confirmLabel="Cancel Subscription"
+          variant="destructive"
+          onConfirm={() => { sub.downgrade(); setCancelSubOpen(false); }}
+        />
       </motion.div>
     </div>
   );
