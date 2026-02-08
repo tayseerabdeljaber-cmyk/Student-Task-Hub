@@ -1,0 +1,126 @@
+Create a mobile-first student task management app called "StudyFlow" (or your preferred name).
+
+TECH STACK:
+- React with TypeScript
+- Tailwind CSS for styling
+- React Router for navigation
+- Mobile-responsive design (optimize for 375px width)
+
+APP STRUCTURE:
+
+1. THREE MAIN SCREENS:
+
+A) TODAY VIEW (Home/Default Screen):
+- Large header showing current day and date (e.g., "Saturday, February 8")
+- Friendly greeting based on time of day ("Good morning!" / "Good afternoon!")
+- "DUE TODAY" section:
+  * Display 2-3 assignment cards
+  * Each card shows: emoji icon (📝/📖/🧪), assignment name, course code, due time
+  * Cards have soft shadows, rounded corners, white background
+- "COMING UP" section:
+  * Simple list of next 3 upcoming assignments
+  * Format: "Tomorrow: Quiz - PHYS 172"
+- Reassurance message at bottom: "✅ You're all caught up for today" (only show when today's tasks are done)
+- If tasks remain: Show "2 tasks left today" message
+
+B) WEEK CALENDAR VIEW:
+- Header: "Week of Feb 8-14"
+- Horizontal scrollable week strip showing 7 days
+- Each day shows:
+  * Day name (Sun, Mon, Tue)
+  * Date number (8, 9, 10)
+  * Dot indicators for number of tasks (1-3 dots)
+  * Current day is highlighted/underlined
+- Below week strip: Expanded view of selected day
+- Selected day shows:
+  * Day name and date as subheader
+  * Time-sorted list of assignments with time stamps (9:00 AM, 11:59 PM)
+  * Same card style as Today view
+- Tapping a day in the week strip updates the expanded view
+
+C) ALL TASKS VIEW:
+- Header: "All Assignments"
+- Simple filter dropdown: "All Classes" with options (CS 159, PHYS 172, ENGR 132, CHM 115, MATH 166)
+- Tasks grouped by urgency:
+  * "OVERDUE" section (red accent, 🔴 indicator)
+  * "THIS WEEK" section (blue accent)
+  * "LATER" section (collapsed by default, shows "Tap to expand (15 more)")
+- Each task card shows: assignment name, course code, due date/time
+- Clean vertical list, NO table/spreadsheet layout
+
+2. BOTTOM NAVIGATION (Fixed at bottom on all screens):
+- Three tabs with icons:
+  * Today (home icon) - links to Today View
+  * Week (calendar icon) - links to Week View  
+  * All (list icon) - links to All Tasks View
+- Active tab is highlighted in blue
+- Icons are simple and clean
+
+3. DESIGN SYSTEM:
+- Color palette:
+  * Primary blue: #6366f1 (indigo-500)
+  * Background: #f8fafc (slate-50)
+  * Cards: white with subtle shadow
+  * Text: #1e293b (slate-800) for headings, #64748b (slate-600) for body
+  * Red accent for overdue: #ef4444 (red-500)
+  * Green for success: #10b981 (emerald-500)
+- Typography:
+  * Headers: 24px, semi-bold
+  * Subheaders: 18px, medium
+  * Body: 14-16px, regular
+- Spacing: Generous padding (16-24px) for mobile touch targets
+- Border radius: 12px for cards
+- Shadows: Soft, subtle (shadow-sm from Tailwind)
+
+4. SAMPLE DATA (Use realistic Purdue University courses):
+Include at least 10 sample assignments across these courses:
+- CS 159 (Intro to Programming)
+- PHYS 172 (Modern Mechanics)
+- ENGR 132 (Engineering Design)
+- CHM 115 (General Chemistry)
+- MATH 166 (Calculus)
+
+Sample assignments:
+- "Homework 2 (Vocareum)" due Feb 8, 11:00 PM - CS 159
+- "Quiz - Chapter 3" due Feb 9, 9:00 AM - PHYS 172
+- "Lab Report 1" due Feb 10, 11:59 PM - ENGR 132
+- "Problem Set 4" due Feb 12, 11:59 PM - MATH 166
+- "Read Chapter 5" due Feb 13, 10:30 AM - CHM 115
+- "Exam 1" due Feb 15, 8:00 AM - PHYS 172
+Include some overdue assignments and some far in the future
+
+5. INTERACTIVITY:
+- Bottom nav switches between screens smoothly
+- Week view: clicking different days updates the content below
+- All Tasks view: filter dropdown actually filters assignments
+- All Tasks view: "LATER" section expands/collapses on click
+- Assignments can be checked off (toggle completed state)
+
+6. MOBILE OPTIMIZATION:
+- Design for 375px width (iPhone size)
+- Touch-friendly tap targets (minimum 44px)
+- Smooth scrolling
+- No horizontal scroll
+- Readable font sizes on mobile
+
+7. CODE QUALITY:
+- Use React functional components with hooks
+- Create reusable components: TaskCard, DayStrip, NavigationBar
+- Clean, commented code
+- Proper TypeScript types for tasks, courses, dates
+- Use state management for selected day, filter, completed tasks
+
+IMPORTANT PRINCIPLES:
+- This should feel STRESS-RELIEVING, not overwhelming
+- Minimize visual clutter
+- Focus on clarity: "What do I need to do TODAY?"
+- Calming color scheme (blues/whites, not harsh reds everywhere)
+- Big, clear reassurance messages
+- Mobile-first (students will use this on their phones)
+
+OUTPUT:
+- Fully functional React app
+- All three screens working and navigable
+- Sample data populated
+- Ready to run immediately
+- Clean file structure (components/, data/, utils/)
