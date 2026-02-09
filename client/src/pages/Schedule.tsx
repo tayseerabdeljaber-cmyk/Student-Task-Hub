@@ -373,21 +373,21 @@ export default function Schedule() {
   return (
     <div className="min-h-screen pb-24">
       <div className="px-5 pt-6 pb-3">
+        <div className="flex items-center justify-between gap-1 mb-1">
+          <h2 className="text-lg font-bold text-foreground truncate" data-testid="text-schedule-header">{headerText}</h2>
+          <Button size="sm" className="flex-shrink-0" onClick={() => setGenerateOpen(true)} data-testid="button-generate-schedule">
+            <Sparkles className="w-3.5 h-3.5 mr-1" />
+            Generate
+          </Button>
+        </div>
         <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button size="icon" variant="ghost" onClick={() => navigate(-1)} data-testid="button-prev">
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <h2 className="text-lg font-bold text-foreground min-w-[140px] text-center" data-testid="text-schedule-header">{headerText}</h2>
+            <Button size="sm" variant="ghost" onClick={goToday} data-testid="button-today">Today</Button>
             <Button size="icon" variant="ghost" onClick={() => navigate(1)} data-testid="button-next">
               <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button size="sm" variant="ghost" onClick={goToday} data-testid="button-today">Today</Button>
-            <Button size="sm" onClick={() => setGenerateOpen(true)} data-testid="button-generate-schedule">
-              <Sparkles className="w-3.5 h-3.5 mr-1" />
-              Generate
             </Button>
           </div>
         </div>
