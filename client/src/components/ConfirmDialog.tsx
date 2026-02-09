@@ -25,7 +25,7 @@ export function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onCancel}>
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40" onClick={onCancel}>
       <div
         className="w-[90%] max-w-sm bg-card rounded-2xl p-6 border border-border shadow-lg animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}

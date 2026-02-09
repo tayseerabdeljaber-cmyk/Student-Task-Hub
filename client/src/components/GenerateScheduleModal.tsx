@@ -265,13 +265,13 @@ export function GenerateScheduleModal({ open, onOpenChange, activities }: Props)
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center" onClick={handleClose}>
-      <div className="bg-white w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl" onClick={e => e.stopPropagation()} data-testid="modal-generate-schedule">
-        <div className="sticky top-0 bg-white z-10 px-5 pt-5 pb-3 border-b border-slate-100">
+    <div className="fixed inset-0 bg-black/50 z-[70] flex items-end sm:items-center justify-center" onClick={handleClose}>
+      <div className="bg-card w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl mb-[env(safe-area-inset-bottom)] sm:mb-0 pb-20 sm:pb-0" onClick={e => e.stopPropagation()} data-testid="modal-generate-schedule">
+        <div className="sticky top-0 bg-card z-10 px-5 pt-5 pb-3 border-b border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-indigo-500" />
-              <h2 className="text-lg font-bold text-slate-900">AI Schedule Generation</h2>
+              <h2 className="text-lg font-bold text-foreground">AI Schedule Generation</h2>
             </div>
             <Button size="icon" variant="ghost" onClick={handleClose} data-testid="button-close-generate">
               <X className="w-4 h-4" />
@@ -283,12 +283,12 @@ export function GenerateScheduleModal({ open, onOpenChange, activities }: Props)
           {step === "options" && (
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-medium text-slate-500 mb-2 block">Generate schedule for:</label>
+                <label className="text-xs font-medium text-muted-foreground mb-2 block">Generate schedule for:</label>
                 <div className="space-y-1.5">
                   {([["today", "Today only"], ["week", "This week (recommended)"], ["two_weeks", "Next 2 weeks"], ["month", "Entire month"]] as [GenerationRange, string][]).map(([val, label]) => (
-                    <button key={val} onClick={() => setRange(val)} className={cn("flex items-center gap-2 w-full p-2.5 rounded-lg text-sm text-left transition-colors", range === val ? "bg-indigo-50 text-indigo-700" : "text-slate-600")} data-testid={`button-range-${val}`}>
-                      <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center", range === val ? "border-indigo-500" : "border-slate-300")}>
-                        {range === val && <div className="w-2 h-2 rounded-full bg-indigo-500" />}
+                    <button key={val} onClick={() => setRange(val)} className={cn("flex items-center gap-2 w-full p-2.5 rounded-lg text-sm text-left transition-colors", range === val ? "bg-primary/10 text-primary" : "text-muted-foreground")} data-testid={`button-range-${val}`}>
+                      <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center", range === val ? "border-primary" : "border-muted-foreground/30")}>
+                        {range === val && <div className="w-2 h-2 rounded-full bg-primary" />}
                       </div>
                       {label}
                     </button>
@@ -297,8 +297,8 @@ export function GenerateScheduleModal({ open, onOpenChange, activities }: Props)
               </div>
 
               <Card className="p-3">
-                <p className="text-xs font-medium text-slate-500 mb-2">Based on:</p>
-                <div className="space-y-1 text-sm text-slate-700">
+                <p className="text-xs font-medium text-muted-foreground mb-2">Based on:</p>
+                <div className="space-y-1 text-sm text-foreground">
                   <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-500" />{upcomingCount} upcoming assignments</div>
                   <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-500" />Your class schedule ({classCount} classes)</div>
                   <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-500" />Your activities ({recurringCount} recurring)</div>
@@ -306,7 +306,7 @@ export function GenerateScheduleModal({ open, onOpenChange, activities }: Props)
               </Card>
 
               <div>
-                <p className="text-xs font-medium text-slate-500 mb-2">Options:</p>
+                <p className="text-xs font-medium text-muted-foreground mb-2">Options:</p>
                 <div className="space-y-2">
                   {[
                     { checked: spreadExamPrep, onChange: setSpreadExamPrep, label: "Spread exam prep over multiple days", id: "spread-exam" },
@@ -317,13 +317,13 @@ export function GenerateScheduleModal({ open, onOpenChange, activities }: Props)
                   ].map(opt => (
                     <label key={opt.id} className="flex items-center gap-2 cursor-pointer">
                       <input type="checkbox" checked={opt.checked} onChange={e => opt.onChange(e.target.checked)} className="rounded" data-testid={`checkbox-${opt.id}`} />
-                      <span className="text-sm text-slate-600">{opt.label}</span>
+                      <span className="text-sm text-muted-foreground">{opt.label}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="text-xs text-slate-400 bg-slate-50 rounded-lg p-3">
+              <div className="text-xs text-muted-foreground bg-muted rounded-lg p-3">
                 This will clear existing AI study blocks, keep your classes & activities, and add optimized study sessions.
               </div>
 
@@ -338,33 +338,33 @@ export function GenerateScheduleModal({ open, onOpenChange, activities }: Props)
 
           {step === "generating" && (
             <div className="py-12 text-center space-y-4">
-              <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mx-auto" />
-              <p className="text-sm text-slate-600">{loadingMsg}</p>
+              <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto" />
+              <p className="text-sm text-muted-foreground">{loadingMsg}</p>
             </div>
           )}
 
           {step === "summary" && (
             <div className="space-y-4">
               <div className="text-center py-2">
-                <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Check className="w-6 h-6 text-emerald-600" />
+                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Check className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">Schedule Generated</h3>
+                <h3 className="text-lg font-bold text-foreground">Schedule Generated</h3>
               </div>
 
               <Card className="p-4" data-testid="card-generation-summary">
                 <div className="flex items-center gap-2 mb-3">
                   <BarChart3 className="w-4 h-4 text-indigo-500" />
-                  <span className="font-semibold text-sm text-slate-900">Summary</span>
+                  <span className="font-semibold text-sm text-foreground">Summary</span>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Study blocks added</span>
-                    <span className="font-medium text-slate-900" data-testid="text-blocks-count">{generatedBlocks.length}</span>
+                    <span className="text-muted-foreground">Study blocks added</span>
+                    <span className="font-medium text-foreground" data-testid="text-blocks-count">{generatedBlocks.length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Total study time</span>
-                    <span className="font-medium text-slate-900">
+                    <span className="text-muted-foreground">Total study time</span>
+                    <span className="font-medium text-foreground">
                       {Math.round(generatedBlocks.reduce((sum, b) => {
                         const [sH, sM] = (b.startTime as string).split(":").map(Number);
                         const [eH, eM] = (b.endTime as string).split(":").map(Number);
@@ -373,8 +373,8 @@ export function GenerateScheduleModal({ open, onOpenChange, activities }: Props)
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Assignments covered</span>
-                    <span className="font-medium text-slate-900">{new Set(generatedBlocks.map(b => b.assignmentId)).size}</span>
+                    <span className="text-muted-foreground">Assignments covered</span>
+                    <span className="font-medium text-foreground">{new Set(generatedBlocks.map(b => b.assignmentId)).size}</span>
                   </div>
                 </div>
               </Card>
@@ -384,12 +384,12 @@ export function GenerateScheduleModal({ open, onOpenChange, activities }: Props)
                   {generatedBlocks.slice(0, 10).map((b, i) => (
                     <div key={i} className="flex items-center gap-2 text-xs py-1">
                       <div className="w-2 h-2 rounded-full" style={{ backgroundColor: b.color as string }} />
-                      <span className="text-slate-500">{format(new Date(b.date as any), "EEE M/d")}</span>
-                      <span className="font-medium text-slate-700 flex-1 truncate">{b.title}</span>
-                      <span className="text-slate-400">{b.startTime}-{b.endTime}</span>
+                      <span className="text-muted-foreground">{format(new Date(b.date as any), "EEE M/d")}</span>
+                      <span className="font-medium text-foreground flex-1 truncate">{b.title}</span>
+                      <span className="text-muted-foreground">{b.startTime}-{b.endTime}</span>
                     </div>
                   ))}
-                  {generatedBlocks.length > 10 && <p className="text-xs text-slate-400 text-center">...and {generatedBlocks.length - 10} more</p>}
+                  {generatedBlocks.length > 10 && <p className="text-xs text-muted-foreground text-center">...and {generatedBlocks.length - 10} more</p>}
                 </div>
               )}
 

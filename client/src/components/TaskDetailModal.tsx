@@ -34,14 +34,14 @@ export function TaskDetailModal({ assignment, onClose }: TaskDetailModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-50"
+            className="fixed inset-0 bg-black/40 z-[70]"
             onClick={onClose}
           />
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
-            className="fixed inset-x-0 bottom-0 bg-card rounded-t-3xl p-6 z-50 max-w-md mx-auto shadow-2xl"
+            className="fixed inset-x-0 bottom-0 bg-card rounded-t-3xl p-6 pb-24 z-[70] max-w-md mx-auto shadow-2xl max-h-[85vh] overflow-y-auto"
             data-testid="modal-task-detail"
           >
             <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />

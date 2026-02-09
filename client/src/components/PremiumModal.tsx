@@ -39,23 +39,23 @@ export function PremiumModal({ open, onClose, feature }: PremiumModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-50"
+            className="fixed inset-0 bg-black/40 z-[70]"
             onClick={onClose}
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed inset-x-4 top-1/2 -translate-y-1/2 bg-card rounded-3xl p-6 z-50 max-w-sm mx-auto shadow-2xl"
+            className="fixed inset-x-4 top-4 bottom-20 bg-card rounded-3xl p-5 z-[70] max-w-sm mx-auto shadow-2xl overflow-y-auto flex flex-col justify-center"
             data-testid="modal-premium"
           >
             <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground" data-testid="button-close-premium">
               <X className="w-5 h-5" />
             </button>
 
-            <div className="text-center mb-5">
-              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Sparkles className="w-8 h-8 text-white" />
+            <div className="text-center mb-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                <Sparkles className="w-7 h-7 text-white" />
               </div>
               <h2 className="text-xl font-bold text-foreground">
                 {feature ? "Premium Feature" : "Upgrade to Premium"}
@@ -67,7 +67,7 @@ export function PremiumModal({ open, onClose, feature }: PremiumModalProps) {
               )}
             </div>
 
-            <div className="space-y-2.5 mb-5">
+            <div className="space-y-2 mb-4">
               {PREMIUM_FEATURES.map(f => (
                 <div key={f} className="flex items-center gap-2.5">
                   <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
@@ -76,7 +76,7 @@ export function PremiumModal({ open, onClose, feature }: PremiumModalProps) {
               ))}
             </div>
 
-            <div className="bg-background rounded-xl p-4 mb-5 text-center">
+            <div className="bg-background rounded-xl p-3 mb-4 text-center">
               <p className="text-2xl font-bold text-foreground">$4.99<span className="text-sm font-normal text-muted-foreground">/month</span></p>
               <p className="text-xs text-muted-foreground mt-0.5">or $39.99/year (save 33%)</p>
               <div className="flex items-center justify-center gap-1.5 mt-2">

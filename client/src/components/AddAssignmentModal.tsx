@@ -93,9 +93,9 @@ export function AddAssignmentModal({ open, onOpenChange, defaultDate }: AddAssig
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={() => onOpenChange(false)}>
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40" onClick={() => onOpenChange(false)}>
       <div
-        className="w-full max-w-md bg-card rounded-t-2xl p-5 pb-8 border-t border-border animate-in slide-in-from-bottom duration-300"
+        className="w-full max-w-md bg-card rounded-t-2xl p-5 pb-24 border-t border-border animate-in slide-in-from-bottom duration-300 max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">

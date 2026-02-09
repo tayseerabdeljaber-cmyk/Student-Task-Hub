@@ -32,7 +32,7 @@ export default function Settings() {
   const { toast } = useToast();
   const brightspaceConnected = localStorage.getItem("brightspaceConnected") === "true";
   const streak = Number(localStorage.getItem("studyStreak") || "5");
-  const darkMode = localStorage.getItem("studyflow_dark_mode") === "true";
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("studyflow_dark_mode") === "true");
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
@@ -83,6 +83,7 @@ export default function Settings() {
   };
 
   const handleDarkMode = (enabled: boolean) => {
+    setDarkMode(enabled);
     localStorage.setItem("studyflow_dark_mode", String(enabled));
     document.documentElement.classList.toggle("dark", enabled);
   };
