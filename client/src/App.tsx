@@ -18,6 +18,7 @@ import Activities from "@/pages/Activities";
 import Schedule from "@/pages/Schedule";
 import Analytics from "@/pages/Analytics";
 import Landing from "@/pages/Landing";
+import Pair from "@/pages/Pair";
 import NotFound from "@/pages/not-found";
 
 function LoadingScreen() {
@@ -43,10 +44,11 @@ function AuthenticatedApp() {
   }, []);
 
   const showBottomNav = !["/login", "/signup", "/onboarding"].includes(location);
+  const showBottomNavSafe = showBottomNav && location !== "/pair";
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans antialiased pb-safe">
-      {showBottomNav && <SyncIndicator />}
+      {showBottomNavSafe && <SyncIndicator />}
       <Switch>
         <Route path="/" component={Today} />
         <Route path="/week" component={Week} />
@@ -55,9 +57,10 @@ function AuthenticatedApp() {
         <Route path="/all" component={AllTasks} />
         <Route path="/analytics" component={Analytics} />
         <Route path="/settings" component={Settings} />
+        <Route path="/pair" component={Pair} />
         <Route component={NotFound} />
       </Switch>
-      {showBottomNav && <BottomNav />}
+      {showBottomNavSafe && <BottomNav />}
     </div>
   );
 }

@@ -1,10 +1,42 @@
 import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
+import { db } from "./db";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import { addDays, setHours, setMinutes, subDays, subHours } from "date-fns";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
+import crypto from "crypto";
+import {
+  setupAuth,
+  registerAuthRoutes,
+  registerLocalDevAuthRoutes,
+} from "./replit_integrations/auth";
+import { isAuthenticated } from "./replit_integrations/auth/replitAuth";
+import { companionDevices, companionTokens, courses, assignments } from "@shared/schema";
+import { and, eq, isNull } from "drizzle-orm";
+
+function isLocalDevAuthBypassEnabled(): boolean {
+  const value = (process.env.LOCAL_DEV_AUTH_BYPASS ?? "").toLowerCase();
+  return value === "1" || value === "true" || value === "yes";
+}
+
+function getLocalDevUserId(): string {
+  return process.env.LOCAL_DEV_USER_ID ?? "local-dev-user";
+}
+
+function requireWebAuth(req: any, res: any, next: any) {
+  if (isLocalDevAuthBypassEnabled()) return next();
+  return isAuthenticated(req, res, next);
+}
+
+function getCurrentUserId(req: any): string | null {
+  if (isLocalDevAuthBypassEnabled()) return getLocalDevUserId();
+  return req?.user?.claims?.sub ?? null;
+}
+
+function sha256Hex(value: string): string {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
 
 async function seedDatabase() {
   const existingCourses = await storage.getCourses();
@@ -95,11 +127,196 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  await setupAuth(app);
-  registerAuthRoutes(app);
+  if (isLocalDevAuthBypassEnabled()) {
+    console.warn(
+      "LOCAL_DEV_AUTH_BYPASS enabled: skipping Replit OIDC and using local dev auth routes."
+    );
+    registerLocalDevAuthRoutes(app);
+  } else {
+    await setupAuth(app);
+    registerAuthRoutes(app);
+  }
 
   await seedDatabase();
   await seedActivities();
+
+  // --- Companion pairing + import endpoints ---
+  const pairInput = z.object({
+    deviceId: z.string().min(1),
+    code: z.string().optional(),
+  });
+
+  app.post("/api/companion/pair", requireWebAuth, async (req, res) => {
+    const parsed = pairInput.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: parsed.error.errors[0]?.message ?? "Invalid input" });
+    }
+
+    const userId = getCurrentUserId(req);
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const { deviceId } = parsed.data;
+
+    await db
+      .insert(companionDevices)
+      .values({
+        deviceId,
+        userId,
+        lastPairedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: companionDevices.deviceId,
+        set: { userId, lastPairedAt: new Date() },
+      });
+
+    const token = crypto.randomBytes(32).toString("base64url");
+    const tokenHash = sha256Hex(token);
+    const expiresAt = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000); // ~180 days
+
+    await db.insert(companionTokens).values({
+      tokenHash,
+      deviceId,
+      userId,
+      expiresAt,
+      lastUsedAt: new Date(),
+    });
+
+    res.json({ token, deviceId });
+  });
+
+  function getBearerToken(req: any): string | null {
+    const header = req.headers["authorization"] ?? "";
+    if (typeof header !== "string") return null;
+    const m = header.match(/^Bearer (.+)$/i);
+    return m ? m[1] : null;
+  }
+
+  async function verifyCompanionToken(req: any) {
+    const token = getBearerToken(req);
+    if (!token) return null;
+    const tokenHash = sha256Hex(token);
+    const [row] = await db.select().from(companionTokens).where(eq(companionTokens.tokenHash, tokenHash));
+    if (!row) return null;
+    if (row.expiresAt && row.expiresAt.getTime() < Date.now()) return null;
+    await db
+      .update(companionTokens)
+      .set({ lastUsedAt: new Date() })
+      .where(eq(companionTokens.tokenHash, tokenHash));
+    return row;
+  }
+
+  app.get("/api/companion/token/verify", async (req, res) => {
+    const verified = await verifyCompanionToken(req);
+    if (!verified) return res.status(401).json({ ok: false });
+    res.json({ ok: true, deviceId: verified.deviceId, userId: verified.userId ?? null });
+  });
+
+  const importedAssignmentSchema = z.object({
+    source: z.string().optional(),
+    platform: z.string().optional(),
+    type: z.string().optional(),
+    course: z.object({
+      code: z.string().optional(),
+      name: z.string().min(1),
+      section: z.string().optional().nullable(),
+    }),
+    title: z.string().min(1),
+    due_at: z.string().min(1),
+    points: z.number().optional().nullable(),
+    status: z.string().optional().nullable(),
+    deep_link_url: z.string().optional().nullable(),
+  });
+
+  const importBody = z.object({
+    deviceId: z.string().min(1),
+    assignments: z.array(importedAssignmentSchema),
+  });
+
+  app.post("/api/companion/import/assignments", async (req, res) => {
+    const verified = await verifyCompanionToken(req);
+    if (!verified) return res.status(401).json({ message: "Unauthorized" });
+
+    const parsed = importBody.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: parsed.error.errors[0]?.message ?? "Invalid input" });
+    }
+
+    if (parsed.data.deviceId !== verified.deviceId) {
+      return res.status(403).json({ message: "Device mismatch" });
+    }
+
+    let imported = 0;
+    let updated = 0;
+
+    for (const a of parsed.data.assignments) {
+      const dueDate = new Date(a.due_at);
+      if (Number.isNaN(dueDate.getTime())) continue;
+
+      const courseCode = a.course.code ?? a.course.name;
+      const courseSection = a.course.section ?? null;
+
+      const existingCourse = await db
+        .select()
+        .from(courses)
+        .where(
+          and(
+            eq(courses.code, courseCode),
+            courseSection === null ? isNull(courses.section) : eq(courses.section, courseSection)
+          )
+        );
+
+      let courseId: number;
+      if (existingCourse.length > 0) {
+        courseId = existingCourse[0]!.id;
+      } else {
+        const color = `#${sha256Hex(`${courseCode}|${courseSection ?? ""}`).slice(0, 6)}`;
+        const [created] = await db
+          .insert(courses)
+          .values({ code: courseCode, name: a.course.name, color, section: courseSection })
+          .returning();
+        courseId = created!.id;
+      }
+
+      const dedupeKey = sha256Hex(
+        a.deep_link_url && a.deep_link_url.trim().length > 0
+          ? `url|${a.deep_link_url}`
+          : `fallback|${a.course.name}|${courseSection ?? ""}|${a.title}|${dueDate.toISOString()}`
+      );
+
+      const [existingAssignment] = await db
+        .select()
+        .from(assignments)
+        .where(eq(assignments.dedupeKey, dedupeKey));
+
+      const completed =
+        typeof a.status === "string" &&
+        ["submitted", "complete", "completed", "done"].includes(a.status.toLowerCase());
+
+      const values = {
+        courseId,
+        title: a.title,
+        type: a.type ?? "homework",
+        platform: a.platform ?? "Brightspace",
+        dueDate,
+        completed,
+        points: a.points ?? null,
+        status: a.status ?? null,
+        deepLinkUrl: a.deep_link_url ?? null,
+        source: a.source ?? "unknown",
+        dedupeKey,
+      };
+
+      if (existingAssignment) {
+        await db.update(assignments).set(values).where(eq(assignments.id, existingAssignment.id));
+        updated += 1;
+      } else {
+        await db.insert(assignments).values(values);
+        imported += 1;
+      }
+    }
+
+    res.json({ ok: true, imported, updated });
+  });
 
   app.get(api.courses.list.path, async (req, res) => {
     const courses = await storage.getCourses();

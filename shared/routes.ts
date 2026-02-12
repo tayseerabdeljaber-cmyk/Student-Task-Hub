@@ -132,6 +132,20 @@ export const api = {
       path: '/api/schedule-blocks/generated' as const,
     },
   },
+  companion: {
+    pair: {
+      method: "POST" as const,
+      path: "/api/companion/pair" as const,
+    },
+    tokenVerify: {
+      method: "GET" as const,
+      path: "/api/companion/token/verify" as const,
+    },
+    importAssignments: {
+      method: "POST" as const,
+      path: "/api/companion/import/assignments" as const,
+    },
+  },
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {

@@ -10,6 +10,7 @@ export const courses = pgTable("courses", {
   code: text("code").notNull(),
   name: text("name").notNull(),
   color: text("color").notNull(),
+  section: text("section"),
 });
 
 export const assignments = pgTable("assignments", {
@@ -20,6 +21,11 @@ export const assignments = pgTable("assignments", {
   platform: text("platform").notNull().default("Brightspace"),
   dueDate: timestamp("due_date").notNull(),
   completed: boolean("completed").default(false).notNull(),
+  points: integer("points"),
+  status: text("status"),
+  deepLinkUrl: text("deep_link_url"),
+  source: text("source").notNull().default("manual"),
+  dedupeKey: text("dedupe_key"),
 });
 
 export const activities = pgTable("activities", {
@@ -70,6 +76,22 @@ export const assignmentsRelations = relations(assignments, ({ one }) => ({
     references: [courses.id],
   }),
 }));
+
+export const companionDevices = pgTable("companion_devices", {
+  deviceId: text("device_id").primaryKey(),
+  userId: text("user_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  lastPairedAt: timestamp("last_paired_at").defaultNow().notNull(),
+});
+
+export const companionTokens = pgTable("companion_tokens", {
+  tokenHash: text("token_hash").primaryKey(),
+  deviceId: text("device_id").notNull(),
+  userId: text("user_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at"),
+  lastUsedAt: timestamp("last_used_at"),
+});
 
 export const insertCourseSchema = createInsertSchema(courses).omit({ id: true });
 export const insertAssignmentSchema = createInsertSchema(assignments).omit({ id: true });

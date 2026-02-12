@@ -4,6 +4,7 @@
 A mobile-first student task management app designed to feel stress-relieving and calming. Built with React + TypeScript frontend and Express + PostgreSQL backend.
 
 ## Recent Changes
+- Feb 10, 2026: Added local auth bypass for localhost development (`LOCAL_DEV_AUTH_BYPASS=true`)
 - Feb 8, 2026: Comprehensive dark mode support across all 18+ pages/components (semantic tokens: bg-background, bg-card, text-foreground, etc.)
 - Feb 8, 2026: Added ErrorBoundary component wrapping entire app with crash recovery UI
 - Feb 8, 2026: Added OfflineBanner component with framer-motion animation for offline detection
@@ -43,6 +44,12 @@ A mobile-first student task management app designed to feel stress-relieving and
 - Auth routes: /api/login, /api/logout, /api/callback, /api/auth/user
 - Schema: shared/models/auth.ts (users, sessions tables)
 - Landing page shown for logged-out users, authenticated app for logged-in users
+
+## Local Development Auth Bypass
+- Set `LOCAL_DEV_AUTH_BYPASS=true` to skip Replit OIDC setup on localhost.
+- In bypass mode, `/api/login`, `/api/callback`, and `/api/logout` redirect to `/`.
+- In bypass mode, `/api/auth/user` returns a local dev user object.
+- Optional overrides: `LOCAL_DEV_USER_ID`, `LOCAL_DEV_USER_EMAIL`, `LOCAL_DEV_USER_FIRST_NAME`, `LOCAL_DEV_USER_LAST_NAME`, `LOCAL_DEV_USER_PROFILE_IMAGE_URL`.
 
 ## Key Routes
 - `/` - Landing page (logged out) or Today View (logged in)
