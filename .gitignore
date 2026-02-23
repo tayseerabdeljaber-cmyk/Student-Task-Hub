@@ -8,3 +8,4 @@ vite.config.ts.*
 **/__pycache__/
 *.pyc
 *.egg-info/
+.env

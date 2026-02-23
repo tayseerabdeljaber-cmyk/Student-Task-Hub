@@ -4,6 +4,7 @@
 A mobile-first student task management app designed to feel stress-relieving and calming. Built with React + TypeScript frontend and Express + PostgreSQL backend.
 
 ## Recent Changes
+- Feb 23, 2026: Added local Docker Postgres workflow (`docker-compose.yml` + `.env.example`) and one-command dev startup via `npm run dev:up`
 - Feb 10, 2026: Added local auth bypass for localhost development (`LOCAL_DEV_AUTH_BYPASS=true`)
 - Feb 8, 2026: Comprehensive dark mode support across all 18+ pages/components (semantic tokens: bg-background, bg-card, text-foreground, etc.)
 - Feb 8, 2026: Added ErrorBoundary component wrapping entire app with crash recovery UI
